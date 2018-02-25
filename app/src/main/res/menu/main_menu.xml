@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_play_pause"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_play_arrow_black_24dp"
+        android:title="@string/action_play_pause"/>
+
+    <item
+        android:id="@+id/action_restart"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_replay_black_24dp"
+        android:title="@string/action_restart"/>
+
+</menu>
