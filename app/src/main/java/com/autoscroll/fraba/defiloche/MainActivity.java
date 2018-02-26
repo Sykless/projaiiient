@@ -1,8 +1,9 @@
-package com.autoscroll.fra.toolbarshit;
+package com.autoscroll.fraba.defiloche;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -26,8 +27,13 @@ import android.widget.ScrollView;
 import java.io.File;
 import java.util.ArrayList;
 
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_UP;
+
 public class MainActivity extends AppCompatActivity
 {
+    Context context;
+
     ImageView imageView;
     LinearLayout linearLayout;
     ScrollView sView;
@@ -43,6 +49,10 @@ public class MainActivity extends AppCompatActivity
     ObjectAnimator moveRestart;
     AnimatorSet animatorSet;
     boolean isRestarted = true;
+    boolean isScrolled = false;
+
+    float touchPosition = 0;
+    float releasePosition = 0;
 
     float imagePosition = 0;
 
@@ -54,9 +64,11 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        context = getApplicationContext();
+
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Test");
+        getSupportActionBar().setTitle("Defiloche");
 
         // Set the variable endScreen to the correct value according to the orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
@@ -75,7 +87,7 @@ public class MainActivity extends AppCompatActivity
         linearLayout = (LinearLayout) findViewById(R.id.main_view);
         sView = (ScrollView) findViewById(R.id.scroll);
 
-        File pdfFile = new File("sdcard/Download/test.pdf");
+        File pdfFile = new File("sdcard/Download/test-1.pdf");
         ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(pdfFile);
 
         for (Bitmap pdfBitmap : pdfBitmaps) // For each bitmap pdf
@@ -88,16 +100,7 @@ public class MainActivity extends AppCompatActivity
             linearLayout.addView(imageView); // Put the imageView in the LinearLayout
         }
 
-        // System.out.println("Taille bitmaps :" + pdfBitmaps.size() + " / Taille file : " + pdfFile.length());
-
-        Log.e("Taille bitmaps",String.valueOf(pdfBitmaps.size()));
-
-        sView.setOnTouchListener( new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
+        sView.setOnTouchListener(new ScrollDetect());
 
         // Get the height of the toolbar
         TypedValue tv = new TypedValue();
@@ -189,6 +192,16 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
+    public class ScrollDetect implements View.OnTouchListener
+    {
+        @Override
+        public boolean onTouch(View v, MotionEvent event)
+        {
+            return true;
+        }
+    }
+
     private ArrayList<Bitmap> pdfToBitmap(File pdfFile) // Convertit un FILE (pdf) en liste de Bitmap
     {
         ArrayList<Bitmap> bitmaps = new ArrayList<>();
@@ -218,37 +231,17 @@ public class MainActivity extends AppCompatActivity
 
                 bitmaps.add(bitmap);
 
-                // close the page
                 page.close();
             }
 
-            // close the renderer
             renderer.close();
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            System.out.println("YESfneilksglfbzjlkqngfljkdsmbgljmkqlen:v");
             System.err.println(ex.getMessage());
         }
 
         return bitmaps;
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-        super.onConfigurationChanged(newConfig);
-
-        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-        {
-            endScreen = (float) size.x;
-        }
-        else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
-        {
-            endScreen = (float) size.y;
-        }
-
-        Log.e("Test",String.valueOf(linearLayout.getChildCount()));
     }
 }
 

@@ -1,4 +1,4 @@
-package com.autoscroll.fra.toolbarshit;
+package com.autoscroll.fraba.defiloche;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

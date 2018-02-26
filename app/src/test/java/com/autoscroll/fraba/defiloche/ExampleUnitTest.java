@@ -1,4 +1,4 @@
-package com.autoscroll.fra.toolbarshit;
+package com.autoscroll.fraba.defiloche;
 
 import org.junit.Test;
 
