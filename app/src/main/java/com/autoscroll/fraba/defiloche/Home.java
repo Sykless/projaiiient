@@ -1,48 +1,35 @@
 package com.autoscroll.fraba.defiloche;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Home extends AppCompatActivity
 {
     private static final int CODE_PLAY = 1;
 
-    int actionBarHeight = 0;
+    AnimationDrawable animationPlay;
+    AnimationDrawable animationCreate;
+    AnimationDrawable animationShare;
 
-    AnimationDrawable rocketAnimation;
-    AnimationDrawable button2Animation;
-    AnimationDrawable button3Animation;
-
-    private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Animation on button when clicked
-    private AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Animation when released
+    private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
+    private AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,85 +37,93 @@ public class Home extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
 
+        // Layout items declaration
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        LinearLayout linearLayout = findViewById(R.id.linearLayout);
+
+        RelativeLayout buttonPlay = findViewById(R.id.test_layout);
+        RelativeLayout buttonCreate = findViewById(R.id.test_layout2);
+        RelativeLayout buttonShare = findViewById(R.id.test_layout3);
+
+        ImageView imagePlay = (ImageView) findViewById(R.id.test_button_image);
+        ImageView imageCreate = (ImageView) findViewById(R.id.test_button_image2);
+        ImageView imageShare = (ImageView) findViewById(R.id.test_button_image3);
+
+        TextView textPlay = findViewById(R.id.test_button_text);
+        TextView textCreate = findViewById(R.id.test_button_text2);
+        TextView textShare = findViewById(R.id.test_button_text3);
+
         // Toolbar setup
-        Toolbar mToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // Get the height of the toolbar
-        TypedValue tv = new TypedValue();
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-        {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
-        }
-
-        // Layout modification
-        /*
-        RelativeLayout relativeLayout = findViewById(R.id.relativeLayout);
-
+        // Layout modification according to orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
-        display.getSize(size);
+        display.getSize(size); // size.x = device width - size.y = device height
 
-        int marginTop = 0;
-        int marginSide = 0;
+        // Default values
+        int marginTop = 300;
+        int marginSide = 200;
+        float textSize = 24;
+        int animSize = 72;
 
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) // Portait orientation
         {
-            int width = size.x;
-            int heigth = size.y - actionBarHeight;
-
-            float ratio = (float) heigth / width;
-
-            marginTop = (int) Math.round(0.81/ratio*width);
-            marginSide = (int) Math.round(0.162/ratio*heigth);
+            marginTop = size.x/3;
+            marginSide = size.x/8;
+            textSize = size.x/15;
+            animSize = size.x/10;
         }
 
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) // Landscape orientation
         {
-            int width = size.y;
-            int heigth = size.x - actionBarHeight;
-
-            float ratio = (float) heigth / width;
-
-            marginTop = (int) Math.round(0.205/ratio*width);
-            marginSide = (int) Math.round(0.164/ratio*heigth);
-
-            marginTop = 400;
+            marginTop = size.x/16;
+            marginSide = size.y/5;
+            textSize = size.x/25;
+            animSize = size.x/15;
         }
 
-        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        params.setMargins(marginSide,marginTop,marginSide,marginTop);
-        relativeLayout.setLayoutParams(params);
+        // Main Layout margins setup
+        LinearLayout.LayoutParams paramsLayout = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
+        paramsLayout.setMargins(marginSide,marginTop,marginSide,marginTop);
+        linearLayout.setLayoutParams(paramsLayout);
 
-        */
-
-        ImageView rocketImage = (ImageView) findViewById(R.id.test_button_image);
-        rocketImage.setBackgroundResource(R.drawable.animation);
-        rocketAnimation = (AnimationDrawable) rocketImage.getBackground();
-        rocketAnimation.start();
-
-        ImageView rocketImage2 = (ImageView) findViewById(R.id.test_button_image2);
-        rocketImage2.setBackgroundResource(R.drawable.animation);
-        button2Animation = (AnimationDrawable) rocketImage2.getBackground();
-        button2Animation.start();
-
-        ImageView rocketImage3 = (ImageView) findViewById(R.id.test_button_image3);
-        rocketImage3.setBackgroundResource(R.drawable.animation);
-        button3Animation = (AnimationDrawable) rocketImage3.getBackground();
-        button3Animation.start();
-
+        // Transform every RelativeLayout with ImageView/TextView inside into a clickable Button
         setRelativeLayoutButton(this,R.id.test_layout);
         setRelativeLayoutButton(this,R.id.test_layout2);
         setRelativeLayoutButton(this,R.id.test_layout3);
 
-        RelativeLayout button1 = findViewById(R.id.test_layout);
-        RelativeLayout button2 = findViewById(R.id.test_layout2);
-        RelativeLayout button3 = findViewById(R.id.test_layout3);
+        // Add an animation to ImageViews
+        imagePlay.setBackgroundResource(R.drawable.animation);
+        animationPlay = (AnimationDrawable) imagePlay.getBackground();
+        animationPlay.start();
 
-        buttonClick.setDuration(300);
-        buttonClickRelease.setDuration(300);
-        buttonClickRelease.setStartOffset(200);
+        imageCreate.setBackgroundResource(R.drawable.animation);
+        animationCreate = (AnimationDrawable) imageCreate.getBackground();
+        animationCreate.start();
+
+        imageShare.setBackgroundResource(R.drawable.animation);
+        animationShare = (AnimationDrawable) imageShare.getBackground();
+        animationShare.start();
+
+        // Change the size of the text according to orientation
+        textPlay.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+        textCreate.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+        textShare.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+
+        // Change the size of the animation according to orientation
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imagePlay.getLayoutParams();
+        params.width = animSize;
+        params.height = animSize;
+        imagePlay.setLayoutParams(params);
+        imageCreate.setLayoutParams(params);
+        imageShare.setLayoutParams(params);
+
+        // Setup of fading effect on button when clicked
+        buttonClick.setDuration(100);
+        buttonClickRelease.setDuration(100);
+        buttonClickRelease.setStartOffset(100);
 
         View.OnClickListener buttonEffect = new View.OnClickListener()
         {
@@ -138,13 +133,13 @@ public class Home extends AppCompatActivity
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
 
-                goToPlay(v);
+                // goToPlay(v);
             }
         };
 
-        button1.setOnClickListener(buttonEffect);
-        button2.setOnClickListener(buttonEffect);
-        button3.setOnClickListener(buttonEffect);
+        buttonPlay.setOnClickListener(buttonEffect);
+        buttonCreate.setOnClickListener(buttonEffect);
+        buttonShare.setOnClickListener(buttonEffect);
     }
 
     public void goToPlay(View view)
@@ -162,61 +157,50 @@ public class Home extends AppCompatActivity
 
     public void setRelativeLayoutButton(Context context, int id)
     {
-        RelativeLayout buttonTest = new RelativeLayout(context);
+        RelativeLayout buttonLayout = new RelativeLayout(context);
         RelativeLayout layout = findViewById(id);
 
-        Log.e("Test ",String.valueOf(layout.getChildCount()));
-
-        // copy layout parameters
+        // Copy ancient layout parameters on my button
         ViewGroup.LayoutParams params = layout.getLayoutParams();
-        buttonTest.setLayoutParams(params);
+        buttonLayout.setLayoutParams(params);
 
-        // here I am using temporary instance of Button class
-        // to get standard button background and to get button text color
-
+        // Copy parameters of a standart button on my button layout
         Button bt = new Button(context);
-        bt.setBackgroundColor(getResources().getColor(R.color.cyan));
-        buttonTest.setBackground(bt.getBackground());
+        bt.setBackgroundColor(getResources().getColor(R.color.cyan)); // Blueish background
+        buttonLayout.setBackground(bt.getBackground());
 
-        // copy all child from relative layout to this button
+        // Copy all children from relative layout to this button
         while (layout.getChildCount() > 0)
         {
-            Log.e("Test","In");
-            View vchild = layout.getChildAt(0);
-            ((ViewGroup)vchild.getParent()).removeView(vchild);
-            buttonTest.addView(vchild);
+            // I transfer the child from the ancient layout to my button
+            View child = layout.getChildAt(0);
+            layout.removeView(child);
+            buttonLayout.addView(child);
 
-            // if child is textView set its color to standard buttong text colors
-            // using temporary instance of Button class
-            if (vchild instanceof TextView  )
+            // If child is a TextView, I set its color to white
+            if (child instanceof TextView  )
             {
-                ((TextView)vchild).setTextColor(getResources().getColor(R.color.white));
+                ((TextView)child).setTextColor(getResources().getColor(R.color.white));
             }
 
-            // just to be sure that child views can't be clicked and focused
-            vchild.setClickable(false);
-            vchild.setFocusable(false);
-            vchild.setFocusableInTouchMode(false);
+            // Just to be sure that child views can't be clicked and focused
+            child.setClickable(false);
+            child.setFocusable(false);
+            child.setFocusableInTouchMode(false);
         }
 
-        // remove all view from layout (maybe it's not necessary)
-        layout.removeAllViews();
+        // Set that this button is clickable, focusable, etc
+        buttonLayout.setClickable(true);
+        buttonLayout.setFocusable(true);
+        buttonLayout.setFocusableInTouchMode(false);
 
-        // set that this button is clickable, focusable, ...
-        buttonTest.setClickable(true);
-        buttonTest.setFocusable(true);
-        buttonTest.setFocusableInTouchMode(false);
-
-        // replace relative layout in parent with this one modified to looks like button
+        // Replace relative layout in parent with this one modified to looks like button
         ViewGroup vp = (ViewGroup)layout.getParent();
         int index = vp.indexOfChild(layout);
         vp.removeView(layout);
-        vp.addView(buttonTest,index);
+        vp.addView(buttonLayout,index);
 
-        buttonTest.setId(id);
+        // Put the ancient layout id in my button
+        buttonLayout.setId(id);
     }
-
-
-
-
 }
