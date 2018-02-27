@@ -28,8 +28,8 @@ public class Home extends AppCompatActivity
     AnimationDrawable animationCreate;
     AnimationDrawable animationShare;
 
-    private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
-    private AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
+    AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
+    AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,13 +41,9 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         LinearLayout linearLayout = findViewById(R.id.linearLayout);
 
-        RelativeLayout buttonPlay = findViewById(R.id.test_layout);
-        RelativeLayout buttonCreate = findViewById(R.id.test_layout2);
-        RelativeLayout buttonShare = findViewById(R.id.test_layout3);
-
-        ImageView imagePlay = (ImageView) findViewById(R.id.test_button_image);
-        ImageView imageCreate = (ImageView) findViewById(R.id.test_button_image2);
-        ImageView imageShare = (ImageView) findViewById(R.id.test_button_image3);
+        ImageView imagePlay = findViewById(R.id.test_button_image);
+        ImageView imageCreate = findViewById(R.id.test_button_image2);
+        ImageView imageShare = findViewById(R.id.test_button_image3);
 
         TextView textPlay = findViewById(R.id.test_button_text);
         TextView textCreate = findViewById(R.id.test_button_text2);
@@ -94,6 +90,10 @@ public class Home extends AppCompatActivity
         setRelativeLayoutButton(this,R.id.test_layout2);
         setRelativeLayoutButton(this,R.id.test_layout3);
 
+        RelativeLayout buttonPlay = findViewById(R.id.test_layout);
+        RelativeLayout buttonCreate = findViewById(R.id.test_layout2);
+        RelativeLayout buttonShare = findViewById(R.id.test_layout3);
+
         // Add an animation to ImageViews
         imagePlay.setBackgroundResource(R.drawable.animation);
         animationPlay = (AnimationDrawable) imagePlay.getBackground();
@@ -132,6 +132,8 @@ public class Home extends AppCompatActivity
             {
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
+
+                System.out.println("Test");
 
                 // goToPlay(v);
             }
