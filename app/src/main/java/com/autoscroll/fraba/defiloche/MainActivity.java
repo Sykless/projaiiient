@@ -4,6 +4,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -32,8 +33,6 @@ import static android.view.MotionEvent.ACTION_UP;
 
 public class MainActivity extends AppCompatActivity
 {
-    Context context;
-
     ImageView imageView;
     LinearLayout linearLayout;
     ScrollView sView;
@@ -49,10 +48,6 @@ public class MainActivity extends AppCompatActivity
     ObjectAnimator moveRestart;
     AnimatorSet animatorSet;
     boolean isRestarted = true;
-    boolean isScrolled = false;
-
-    float touchPosition = 0;
-    float releasePosition = 0;
 
     float imagePosition = 0;
 
@@ -64,11 +59,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        context = getApplicationContext();
-
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Defiloche");
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Set the variable endScreen to the correct value according to the orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
@@ -108,8 +101,13 @@ public class MainActivity extends AppCompatActivity
         {
             actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
         }
+    }
 
-
+    public void changeName(View view)
+    {
+        Intent intent = getIntent();
+        setResult(RESULT_OK,intent); // Everything went ok
+        finish(); // I go back to the home activity
     }
 
     @Override
