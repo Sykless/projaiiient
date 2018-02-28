@@ -148,12 +148,12 @@ public class MainActivity extends AppCompatActivity
 
             if (movePartition.isPaused())
             {
-                menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_pause_black_24dp));
+                menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_pause_white_48dp));
                 movePartition.resume();
             }
             else
             {
-                menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_play_arrow_black_24dp));
+                menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_play_arrow_white_48dp));
                 movePartition.pause();
             }
 
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity
             animatorSet.play(moveRestart);
             animatorSet.start();
 
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_play_arrow_black_24dp));
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(this,R.drawable.ic_play_arrow_white_48dp));
 
             animatorSet.play(movePartition);
             animatorSet.start();

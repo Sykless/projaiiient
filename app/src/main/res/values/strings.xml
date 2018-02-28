@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Defiloche</string>
-    <string name="action_play_pause">PlayPause</string>
+    <string name="action_play_pause">Play/Pause</string>
     <string name="action_restart">Restart</string>
+    <string name="action_home">Home</string>
 </resources>

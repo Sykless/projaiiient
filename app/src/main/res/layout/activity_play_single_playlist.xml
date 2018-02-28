@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.autoscroll.fraba.defiloche.Home">
+    tools:context="com.autoscroll.fraba.defiloche.PlaySinglePlaylist">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -31,30 +31,36 @@
         </FrameLayout>
     </android.support.v7.widget.Toolbar>
 
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <View
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight=".20" />
+
         <RelativeLayout
-            android:id="@+id/buttonPlay"
+            android:id="@+id/buttonSingle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/cyan"
             android:layout_weight=".20">
 
             <TextView
-                android:id="@+id/textPlay"
+                android:id="@+id/textSingle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
-                android:text="Jouer"
+                android:text="Single"
                 android:textColor="@android:color/white"
                 android:textSize="24sp" />
 
             <ImageView
-                android:id="@+id/imagePlay"
+                android:id="@+id/imageSingle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true" />
@@ -66,24 +72,24 @@
             android:layout_weight=".20" />
 
         <RelativeLayout
-            android:id="@+id/buttonCreate"
+            android:id="@+id/buttonAlbum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/cyan"
             android:layout_weight=".20">
 
             <TextView
-                android:id="@+id/textCreate"
+                android:id="@+id/textAlbum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
-                android:text="Création"
+                android:text="Album"
                 android:textColor="@android:color/white"
                 android:textSize="24sp" />
 
             <ImageView
-                android:id="@+id/imageCreate"
+                android:id="@+id/imageAlbum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true" />
@@ -93,29 +99,6 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight=".20" />
-
-        <RelativeLayout
-            android:id="@+id/buttonShare"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/cyan"
-            android:layout_weight=".20">
-
-            <TextView
-                android:id="@+id/textShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:text="Partager"
-                android:textColor="@android:color/white"
-                android:textSize="24sp" />
-
-            <ImageView
-                android:id="@+id/imageShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"/>
-        </RelativeLayout>
     </LinearLayout>
+
 </LinearLayout>

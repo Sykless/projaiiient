@@ -20,34 +20,31 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class Home extends AppCompatActivity
+public class PlaySinglePlaylist extends AppCompatActivity
 {
-    private static final int CODE_PLAY = 1;
-
-    AnimationDrawable animationPlay;
-    AnimationDrawable animationCreate;
-    AnimationDrawable animationShare;
+    AnimationDrawable animationSingle;
+    AnimationDrawable animationAlbum;
 
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
+
+    private static final int CODE_PLAY = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_layout);
+        setContentView(R.layout.activity_play_single_playlist);
 
         // Layout items declaration
         Toolbar toolbar = findViewById(R.id.toolbar);
         LinearLayout linearLayout = findViewById(R.id.linearLayout);
 
-        ImageView imagePlay = findViewById(R.id.imagePlay);
-        ImageView imageCreate = findViewById(R.id.imageCreate);
-        ImageView imageShare = findViewById(R.id.imageShare);
+        ImageView imageSingle = findViewById(R.id.imageSingle);
+        ImageView imageAlbum = findViewById(R.id.imageAlbum);
 
-        TextView textPlay = findViewById(R.id.textPlay);
-        TextView textCreate = findViewById(R.id.textCreate);
-        TextView textShare = findViewById(R.id.textShare);
+        TextView textSingle = findViewById(R.id.textSingle);
+        TextView textAlbum = findViewById(R.id.textAlbum);
 
         // Toolbar setup
         setSupportActionBar(toolbar);
@@ -88,39 +85,31 @@ public class Home extends AppCompatActivity
         linearLayout.setLayoutParams(paramsLayout);
 
         // Transform every RelativeLayout with ImageView/TextView inside into a clickable Button
-        setRelativeLayoutButton(this,R.id.buttonPlay);
-        setRelativeLayoutButton(this,R.id.buttonCreate);
-        setRelativeLayoutButton(this,R.id.buttonShare);
+        setRelativeLayoutButton(this,R.id.buttonSingle);
+        setRelativeLayoutButton(this,R.id.buttonAlbum);
 
-        RelativeLayout buttonPlay = findViewById(R.id.buttonPlay);
-        RelativeLayout buttonCreate = findViewById(R.id.buttonCreate);
-        RelativeLayout buttonShare = findViewById(R.id.buttonShare);
+        RelativeLayout buttonSingle = findViewById(R.id.buttonSingle);
+        RelativeLayout buttonAlbum = findViewById(R.id.buttonAlbum);
 
         // Add an animation to ImageViews
-        imagePlay.setBackgroundResource(R.drawable.animation);
-        animationPlay = (AnimationDrawable) imagePlay.getBackground();
-        animationPlay.start();
+        imageSingle.setBackgroundResource(R.drawable.animation);
+        animationSingle = (AnimationDrawable) imageSingle.getBackground();
+        animationSingle.start();
 
-        imageCreate.setBackgroundResource(R.drawable.animation);
-        animationCreate = (AnimationDrawable) imageCreate.getBackground();
-        animationCreate.start();
-
-        imageShare.setBackgroundResource(R.drawable.animation);
-        animationShare = (AnimationDrawable) imageShare.getBackground();
-        animationShare.start();
+        imageAlbum.setBackgroundResource(R.drawable.animation);
+        animationAlbum = (AnimationDrawable) imageAlbum.getBackground();
+        animationAlbum.start();
 
         // Change the size of the text according to orientation
-        textPlay.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-        textCreate.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-        textShare.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+        textSingle.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+        textAlbum.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
 
         // Change the size of the animation according to orientation
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imagePlay.getLayoutParams();
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imageSingle.getLayoutParams();
         params.width = animSize;
         params.height = animSize;
-        imagePlay.setLayoutParams(params);
-        imageCreate.setLayoutParams(params);
-        imageShare.setLayoutParams(params);
+        imageSingle.setLayoutParams(params);
+        imageAlbum.setLayoutParams(params);
 
         // Setup of fading effect on button when clicked
         buttonClick.setDuration(100);
@@ -137,18 +126,17 @@ public class Home extends AppCompatActivity
 
                 System.out.println("Test");
 
-                goToPlay(v);
+                goToPlay();
             }
         };
 
-        buttonPlay.setOnClickListener(buttonEffect);
-        buttonCreate.setOnClickListener(buttonEffect);
-        buttonShare.setOnClickListener(buttonEffect);
+        buttonSingle.setOnClickListener(buttonEffect);
+        buttonAlbum.setOnClickListener(buttonEffect);
     }
 
-    public void goToPlay(View view)
+    public void goToPlay()
     {
-        Intent intent = new Intent(this,PlaySinglePlaylist.class);
+        Intent intent = new Intent(this,MainActivity.class);
         startActivityForResult(intent,CODE_PLAY);
     }
 
