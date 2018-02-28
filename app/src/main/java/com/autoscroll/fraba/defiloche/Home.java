@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -141,14 +142,34 @@ public class Home extends AppCompatActivity
             }
         };
 
+        View.OnClickListener buttonEffectCreate = new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                v.startAnimation(buttonClick);
+                v.startAnimation(buttonClickRelease);
+
+                System.out.println("Test");
+
+                goToCreate(v);
+            }
+        };
+
         buttonPlay.setOnClickListener(buttonEffect);
-        buttonCreate.setOnClickListener(buttonEffect);
+        buttonCreate.setOnClickListener(buttonEffectCreate);
         buttonShare.setOnClickListener(buttonEffect);
     }
 
     public void goToPlay(View view)
     {
         Intent intent = new Intent(this,PlaySinglePlaylist.class);
+        startActivityForResult(intent,CODE_PLAY);
+    }
+
+    public void goToCreate(View view)
+    {
+        Intent intent = new Intent(this,Parcourir.class);
         startActivityForResult(intent,CODE_PLAY);
     }
 

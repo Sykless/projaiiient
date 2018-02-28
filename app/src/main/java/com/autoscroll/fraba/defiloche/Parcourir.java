@@ -33,7 +33,6 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parcourir_layout);
-        getSupportActionBar().hide();
         fichiers = DCIMParentDir.listFiles();
         listViewFiles = (ListView) findViewById(R.id.IDFiles);
         listViewFiles.setOnItemClickListener(this);
