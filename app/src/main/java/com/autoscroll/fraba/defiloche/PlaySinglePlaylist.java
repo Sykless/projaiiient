@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -37,7 +38,6 @@ public class PlaySinglePlaylist extends AppCompatActivity
         setContentView(R.layout.activity_play_single_playlist);
 
         // Layout items declaration
-        Toolbar toolbar = findViewById(R.id.toolbar);
         LinearLayout linearLayout = findViewById(R.id.linearLayout);
 
         ImageView imageSingle = findViewById(R.id.imageSingle);
@@ -47,6 +47,16 @@ public class PlaySinglePlaylist extends AppCompatActivity
         TextView textAlbum = findViewById(R.id.textAlbum);
 
         // Toolbar setup
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        FrameLayout homeLayout = findViewById(R.id.homeLayout);
+        homeLayout.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                goToHome();
+            }
+        });
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -134,16 +144,22 @@ public class PlaySinglePlaylist extends AppCompatActivity
         buttonAlbum.setOnClickListener(buttonEffect);
     }
 
+    public void goToHome()
+    {
+        Intent intent = new Intent(this,Home.class);
+        startActivity(intent);
+    }
+
     public void goToPlay()
     {
         Intent intent = new Intent(this,MainActivity.class);
-        startActivityForResult(intent,CODE_PLAY);
+        startActivity(intent);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
+    public boolean onSupportNavigateUp()
     {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        onBackPressed();
         return true;
     }
 

@@ -3,7 +3,6 @@ package com.autoscroll.fraba.defiloche;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -14,22 +13,19 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import static android.view.MotionEvent.ACTION_DOWN;
-import static android.view.MotionEvent.ACTION_UP;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -59,9 +55,20 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar mToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        FrameLayout homeLayout = findViewById(R.id.homeLayout);
+        homeLayout.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                goToHome();
+            }
+        });
 
         // Set the variable endScreen to the correct value according to the orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
@@ -103,11 +110,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void changeName(View view)
+    @Override
+    public boolean onSupportNavigateUp()
     {
-        Intent intent = getIntent();
-        setResult(RESULT_OK,intent); // Everything went ok
-        finish(); // I go back to the home activity
+        onBackPressed();
+        return true;
+    }
+
+    public void goToHome()
+    {
+        Intent intent = new Intent(this,Home.class);
+        startActivity(intent);
     }
 
     @Override
@@ -133,7 +146,7 @@ public class MainActivity extends AppCompatActivity
         movePartition.pause();
 
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_play_single, menu);
         return true;
     }
 

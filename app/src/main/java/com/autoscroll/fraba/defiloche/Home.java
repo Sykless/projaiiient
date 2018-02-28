@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -52,8 +51,6 @@ public class Home extends AppCompatActivity
 
         // Toolbar setup
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Layout modification according to orientation of the device
@@ -171,13 +168,6 @@ public class Home extends AppCompatActivity
     {
         Intent intent = new Intent(this,Parcourir.class);
         startActivityForResult(intent,CODE_PLAY);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
     }
 
     public void setRelativeLayoutButton(Context context, int id)
