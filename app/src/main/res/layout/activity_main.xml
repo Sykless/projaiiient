@@ -23,8 +23,9 @@
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/main_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"></LinearLayout>
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
         </ScrollView>
     </LinearLayout>
 
@@ -42,7 +43,7 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/toolbarLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_alignBottom="@+id/toolbar"
@@ -56,7 +57,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -78,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -87,28 +88,18 @@
                 app:layout_constraintVertical_bias="0.5">
 
                 <TextView
-                    android:id="@+id/textArtist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Dire Straits"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textSeparator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/textArtist"
-                    android:text=" - "
-                    android:textColor="@android:color/white" />
-
-                <TextView
                     android:id="@+id/textTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/textSeparator"
-                    android:text="Sultan of swing"
-                    android:textColor="@android:color/white" />
+                    android:ellipsize="marquee"
+                    android:fadingEdge="horizontal"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:text="Simple texte qui dure"
+                    android:textColor="@color/white" />
             </RelativeLayout>
 
             <FrameLayout
@@ -120,7 +111,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -143,7 +134,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -165,7 +156,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 app:layout_constraintBottom_toBottomOf="parent"

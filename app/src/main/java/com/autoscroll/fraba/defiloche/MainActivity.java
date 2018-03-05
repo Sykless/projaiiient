@@ -17,14 +17,19 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -39,25 +44,24 @@ public class MainActivity extends AppCompatActivity {
     ImageView playPauseButton;
     ConstraintLayout toolbarLayout;
     FrameLayout homeLayout;
-    TextView artistText;
-    TextView titleText;
-    TextView separatorText;
+    TextView textTitle;
 
     Point size;
 
-    float actionBarHeight = 0;
     float endPage = 0;
     float endScreen = 0;
     float textSize = 20;
 
     int numberPdf = 0;
     int compteurSize = 0;
+    int actionBarHeight = 0;
+    int statusBarHeight = 0;
+    int bottomScroll =  0;
 
     ObjectAnimator movePartition;
     ObjectAnimator moveRestart;
     AnimatorSet animatorSet;
 
-    boolean isRestarted = true;
     boolean isRunning = false;
     boolean layoutSetup = false;
     boolean oneLine = true;
@@ -73,236 +77,65 @@ public class MainActivity extends AppCompatActivity {
         replayLayout = findViewById(R.id.replayLayout);
         textLayout = findViewById(R.id.textLayout);
         toolbarLayout = findViewById(R.id.toolbarLayout);
-        artistText = findViewById(R.id.textArtist);
-        titleText = findViewById(R.id.textTitle);
-        separatorText = findViewById(R.id.textSeparator);
         homeLayout = findViewById(R.id.homeLayout);
+        linearLayout = findViewById(R.id.main_view);
+        sView = findViewById(R.id.scroll);
+        textTitle = findViewById(R.id.textTitle);
 
+        // Toolbar setup
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // Get the height of the toolbar
-        TypedValue tv = new TypedValue();
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-        {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-        }
+        // Get the height of the toolbar and statusBar
+        actionBarHeight = getActionBarHeight();
+        statusBarHeight = getStatusBarHeight();
 
         // Toolbar modification according to size of the device
-        // Main Layout margins setup
-        artistText.setTextSize(20);
-        titleText.setTextSize(20);
-        separatorText.setTextSize(20);
 
+        textLayout.getViewTreeObserver().addOnGlobalLayoutListener(textAdapter);
+        playPauseLayout.setOnClickListener(playPauseListener);
+        replayLayout.setOnClickListener(replayListener);
         homeLayout.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 goToHome();
             }
         });
 
-        playPauseLayout.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                isRestarted = false;
-
-                if (isRunning)
-                {
-                    isRunning = false;
-                    playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
-
-                    animatorSet.cancel();
-                }
-                else
-                {
-                    isRunning = true;
-                    playPauseButton.setImageResource(R.drawable.ic_pause_white_48dp);
-
-                    movePartition = ObjectAnimator.ofInt(sView,"scrollY",sView.getScrollY(), sView.getBottom() + Math.round(endScreen));
-                    movePartition.setDuration(3000);
-                    animatorSet.play(movePartition);
-                    animatorSet.start();
-                }
-            }
-        });
-
-
-        replayLayout.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                int[] locationOnScreen = new int[2];
-                linearLayout.getLocationOnScreen(locationOnScreen);
-
-                if (isRestarted)
-                {
-                    moveRestart = ObjectAnimator.ofInt(sView, "scrollY", Math.round(actionBarHeight), Math.round(actionBarHeight));
-                }
-                else
-                {
-                    moveRestart = ObjectAnimator.ofInt(sView, "scrollY", locationOnScreen[1], Math.round(actionBarHeight));
-                }
-
-                isRestarted = true;
-
-                animatorSet.play(moveRestart);
-                animatorSet.start();
-
-                playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
-
-                animatorSet.play(movePartition);
-                animatorSet.start();
-                movePartition.pause();
-            }
-        });
-
-
         Display display = getWindowManager().getDefaultDisplay();
         size = new Point();
         display.getSize(size);
+        endScreen = (float) size.y;
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-        {
-            endScreen = (float) size.x;
-        }
-        else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
-        {
-            endScreen = (float) size.y;
-        }
-
-        linearLayout = (LinearLayout) findViewById(R.id.main_view);
-        sView = (ScrollView) findViewById(R.id.scroll);
-
-        File pdfFile = new File("sdcard/Download/test-1.pdf"); // TODO add variable path
-
-        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(pdfFile);
-
+        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(new File("sdcard/Download/test-1.pdf"));
         for (Bitmap pdfBitmap : pdfBitmaps) // For each bitmap pdf
         {
             // Creation of a new imageView
             imageView = new ImageView(this);
             imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-
             imageView.setImageBitmap(pdfBitmap); // Put the bitmap in the imageView
+
             linearLayout.addView(imageView); // Put the imageView in the LinearLayout
         }
 
-        // sView.setOnTouchListener(new ScrollDetect());
+        bottomScroll = Math.round(4*endPage - endScreen + actionBarHeight + statusBarHeight);
 
-        // Animation setup
-        Log.e("GoTo ",""+Math.round(numberPdf * endPage + actionBarHeight - size.y));
-        movePartition = ObjectAnimator.ofInt(sView,"scrollY",0,0);
-        movePartition.addListener(new Animator.AnimatorListener()
-        {
-            public void onAnimationStart(Animator animation) {}
-            public void onAnimationRepeat(Animator animation) {}
-
-            public void onAnimationEnd(Animator animation)
-            {
-                isRunning = false;
-                playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
-
-                animatorSet.cancel();
-            }
-            public void onAnimationCancel(Animator animation)
-            {
-                isRunning = false;
-            }
-    });
-        moveRestart = ObjectAnimator.ofInt(sView, "scrollY", Math.round(actionBarHeight), Math.round(actionBarHeight));
-        moveRestart.setDuration(200);
-
-        animatorSet = new AnimatorSet();
-
-        textLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener()
+        sView.setOnTouchListener(new View.OnTouchListener()
         {
             @Override
-            public void onGlobalLayout ()
+            public boolean onTouch(View v, MotionEvent event)
             {
-                if (!layoutSetup)
-                {
-                    Rect rectView = new Rect();
-                    textLayout.getGlobalVisibleRect(rectView);
-                    int endTextLayout = rectView.right;
-
-                    homeLayout.getGlobalVisibleRect(rectView);
-                    int startHomeLayout = rectView.left;
-
-                    if (startHomeLayout - 5 < endTextLayout)
-                    {
-                        if (oneLine)
-                        {
-                            if (compteurSize < 5)
-                            {
-                                compteurSize++;
-                                textSize = textSize - 1;
-
-                                // Main Layout margins setup
-                                artistText.setTextSize(textSize);
-                                titleText.setTextSize(textSize);
-                                separatorText.setTextSize(textSize);
-
-                                Log.e("Test oui", "" + endTextLayout + " - " + startHomeLayout);
-                            }
-                            else
-                            {
-                                oneLine = false;
-                                textSize = 20;
-                                compteurSize = 0;
-                                artistText.setTextSize(textSize);
-                                titleText.setTextSize(textSize);
-                                separatorText.setVisibility(View.GONE);
-
-                                RelativeLayout.LayoutParams paramsTitle = (RelativeLayout.LayoutParams) titleText.getLayoutParams();
-                                paramsTitle.addRule(RelativeLayout.BELOW,R.id.textArtist);
-                                paramsTitle.addRule(RelativeLayout.END_OF);
-                                titleText.setLayoutParams(paramsTitle);
-                            }
-                        }
-                        else
-                        {
-                            if (compteurSize < 5)
-                            {
-                                /*
-                                if (textLayout.getHeight() + 30 > actionBarHeight)
-                                {
-                                    artistText.setTextSize(textSize - 1);
-                                    titleText.setTextSize(textSize - 1);
-
-                                    layoutSetup = true;
-                                }
-                                else
-                                {
-                                */
-                                compteurSize++;
-                                textSize = textSize - 1;
-
-                                // Main Layout margins setup
-                                artistText.setTextSize(textSize);
-                                titleText.setTextSize(textSize);
-                                // }
-
-                                Log.e("Test oui", "" + endTextLayout + " - " + startHomeLayout);
-                            }
-                            else
-                            {
-                                // Shrink text
-
-                            }
-                        }
-                    }
-                    else
-                    {
-                        layoutSetup = true;
-                    }
-                }
+                return isRunning;
             }
         });
+    }
+
+    public void Toast(String text)
+    {
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
     public void goToHome()
@@ -320,22 +153,18 @@ public class MainActivity extends AppCompatActivity {
             PdfRenderer renderer = new PdfRenderer(ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY));
 
             Bitmap bitmap;
-            final int pageCount = renderer.getPageCount();
+            numberPdf = renderer.getPageCount();
 
-            for (int i = 0; i < pageCount; i++)
+            for (int i = 0; i < numberPdf; i++)
             {
                 PdfRenderer.Page page = renderer.openPage(i);
 
-                int newY = Math.round(size.x*(float)(page.getHeight() - actionBarHeight)/page.getWidth());
-
                 if (i == 0)
                 {
-                    endPage = newY;
-                    numberPdf = pageCount;
+                    endPage = size.x*page.getHeight()/page.getWidth();
                 }
 
-                bitmap = Bitmap.createBitmap(size.x, newY, Bitmap.Config.ARGB_8888);
-
+                bitmap = Bitmap.createBitmap(size.x, Math.round(endPage), Bitmap.Config.ARGB_8888);
                 page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
                 bitmaps.add(bitmap);
@@ -353,6 +182,122 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return bitmaps;
+    }
+
+    View.OnClickListener playPauseListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            if (isRunning)
+            {
+                animatorSet.cancel();
+            }
+            else
+            {
+                isRunning = true;
+                playPauseButton.setImageResource(R.drawable.ic_pause_white_48dp);
+
+                movePartition = ObjectAnimator.ofInt(sView, "scrollY", sView.getScrollY(), bottomScroll);
+                movePartition.addListener(animatorPause);
+                movePartition.setDuration(Math.round(3000*(1 - (float)sView.getScrollY()/bottomScroll)));
+
+                animatorSet = new AnimatorSet();
+                animatorSet.play(movePartition);
+                animatorSet.start();
+            }
+        }
+    };
+
+    public View.OnClickListener replayListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            if (sView.getScrollY() != 0 && !isRunning)
+            {
+                moveRestart = ObjectAnimator.ofInt(sView, "scrollY", sView.getScrollY(), 0);
+                moveRestart.addListener(animatorPause);
+                moveRestart.setDuration(200);
+
+                animatorSet = new AnimatorSet();
+                animatorSet.play(moveRestart);
+                animatorSet.start();
+            }
+        }
+    };
+
+    public Animator.AnimatorListener animatorPause = new Animator.AnimatorListener()
+    {
+        public void onAnimationStart(Animator animation) {}
+        public void onAnimationRepeat(Animator animation) {}
+        public void onAnimationCancel(Animator animation) {}
+        public void onAnimationEnd(Animator animation)
+        {
+            isRunning = false;
+            playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+        }
+    };
+
+    public ViewTreeObserver.OnGlobalLayoutListener textAdapter = new ViewTreeObserver.OnGlobalLayoutListener()
+    {
+        @Override
+        public void onGlobalLayout()
+        {
+            if (!layoutSetup)
+            {
+                Rect rectView = new Rect();
+                textLayout.getGlobalVisibleRect(rectView);
+                int startTextLayout = rectView.left;
+
+                homeLayout.getGlobalVisibleRect(rectView);
+                int startHomeLayout = rectView.left;
+
+                textTitle.setWidth(startHomeLayout - startTextLayout - 4);
+
+                float textSize = size.x/80;
+
+                if (textSize < 10)
+                {
+                    textSize = 10;
+                }
+
+                if (textSize > 20)
+                {
+                    textSize = 20;
+                }
+
+                textTitle.setTextSize(textSize);
+
+                layoutSetup = true;
+            }
+        }
+    };
+
+    public int getStatusBarHeight()
+    {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+
+        if (resourceId > 0)
+        {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+
+        return result;
+    }
+
+    public int getActionBarHeight()
+    {
+        int result = 0;
+        TypedValue tv = new TypedValue();
+
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            result = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+
+        return result;
     }
 }
 
