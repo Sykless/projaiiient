@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         display.getSize(size);
         endScreen = (float) size.y;
 
-        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(new File("sdcard/Download/test-1.pdf"));
+        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(new File("sdcard/Download/test.pdf"));
         for (Bitmap pdfBitmap : pdfBitmaps) // For each bitmap pdf
         {
             // Creation of a new imageView

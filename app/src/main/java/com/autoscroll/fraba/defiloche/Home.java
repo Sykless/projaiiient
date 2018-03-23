@@ -1,10 +1,14 @@
 package com.autoscroll.fraba.defiloche;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +26,8 @@ import android.widget.TextView;
 
 public class Home extends AppCompatActivity
 {
+    public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    public final int EXTERNAL_REQUEST = 138;
     private static final int CODE_PLAY = 1;
 
     AnimationDrawable animationPlay;
@@ -36,6 +42,7 @@ public class Home extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
+        requestForPermission();
 
         // Layout items declaration
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -217,5 +224,30 @@ public class Home extends AppCompatActivity
 
         // Put the ancient layout id in my button
         buttonLayout.setId(id);
+    }
+    public boolean requestForPermission()
+    {
+        boolean isPermissionOn = true;
+        final int version = Build.VERSION.SDK_INT;
+        if (version >= 23) {
+            if (!canAccessExternalSd())
+            {
+                isPermissionOn = false;
+                requestPermissions(EXTERNAL_PERMS, EXTERNAL_REQUEST);
+            }
+        }
+
+        return isPermissionOn;
+    }
+
+    public boolean canAccessExternalSd()
+    {
+        return (hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE));
+    }
+
+    private boolean hasPermission(String perm)
+    {
+        return (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, perm));
+
     }
 }
