@@ -8,14 +8,14 @@
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" />
-        <activity android:name=".PlaySinglePlaylist" />
+        <activity android:name=".Play" />
+        <activity android:name=".ChooseSinglePlaylist" />
         <activity android:name=".Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Parcourir"></activity>
+        <activity android:name=".Parcourir" />
+        <activity android:name=".SelectSong"></activity>
     </application>
 
 </manifest>

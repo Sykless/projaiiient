@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.autoscroll.fraba.defiloche.MainActivity">
+    tools:context="com.autoscroll.fraba.defiloche.Play">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/main_parent_view"
@@ -98,7 +98,7 @@
                     android:marqueeRepeatLimit="marquee_forever"
                     android:scrollHorizontally="true"
                     android:singleLine="true"
-                    android:text="Simple texte qui dure"
+                    android:text="Sultan of swing - Dire Straits test"
                     android:textColor="@color/white" />
             </RelativeLayout>
 
@@ -171,8 +171,6 @@
                     android:cropToPadding="false"
                     android:src="@drawable/ic_play_arrow_white_48dp" />
             </FrameLayout>
-
         </android.support.constraint.ConstraintLayout>
-
     </android.support.v7.widget.Toolbar>
 </RelativeLayout>

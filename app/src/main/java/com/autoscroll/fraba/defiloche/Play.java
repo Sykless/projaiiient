@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.pdf.PdfRenderer;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +34,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class Play extends AppCompatActivity {
     ImageView imageView;
     LinearLayout linearLayout;
     ScrollView sView;
@@ -50,10 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     float endPage = 0;
     float endScreen = 0;
-    float textSize = 20;
 
     int numberPdf = 0;
-    int compteurSize = 0;
     int actionBarHeight = 0;
     int statusBarHeight = 0;
     int bottomScroll =  0;
@@ -64,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isRunning = false;
     boolean layoutSetup = false;
-    boolean oneLine = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -110,7 +108,9 @@ public class MainActivity extends AppCompatActivity {
         display.getSize(size);
         endScreen = (float) size.y;
 
-        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(new File("sdcard/Download/test.pdf"));
+        final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        final File DCIMParentDir = DCIMDir.getParentFile();
+        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(new File(DCIMParentDir.getAbsolutePath() + "/DepuisAndroid/test.pdf"));
         for (Bitmap pdfBitmap : pdfBitmaps) // For each bitmap pdf
         {
             // Creation of a new imageView
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             linearLayout.addView(imageView); // Put the imageView in the LinearLayout
         }
 
-        bottomScroll = Math.round(4*endPage - endScreen + actionBarHeight + statusBarHeight);
+        bottomScroll = Math.round(numberPdf*endPage - endScreen + actionBarHeight + statusBarHeight);
 
         sView.setOnTouchListener(new View.OnTouchListener()
         {

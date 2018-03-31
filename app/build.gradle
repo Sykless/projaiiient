@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         applicationId "com.autoscroll.fraba.defiloch"
         minSdkVersion 21
         targetSdkVersion 26

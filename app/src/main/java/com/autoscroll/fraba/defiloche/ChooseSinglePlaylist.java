@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Display;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -21,7 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class PlaySinglePlaylist extends AppCompatActivity
+public class ChooseSinglePlaylist extends AppCompatActivity
 {
     AnimationDrawable animationSingle;
     AnimationDrawable animationAlbum;
@@ -29,7 +28,7 @@ public class PlaySinglePlaylist extends AppCompatActivity
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
 
-    private static final int CODE_PLAY = 1;
+    String displayMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,8 +57,6 @@ public class PlaySinglePlaylist extends AppCompatActivity
         });
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Layout modification according to orientation of the device
@@ -134,8 +131,6 @@ public class PlaySinglePlaylist extends AppCompatActivity
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
 
-                System.out.println("Test");
-
                 goToPlay();
             }
         };
@@ -152,7 +147,7 @@ public class PlaySinglePlaylist extends AppCompatActivity
 
     public void goToPlay()
     {
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this,Play.class);
         startActivity(intent);
     }
 
