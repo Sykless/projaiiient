@@ -108,9 +108,8 @@ public class Play extends AppCompatActivity {
         display.getSize(size);
         endScreen = (float) size.y;
 
-        final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        final File DCIMParentDir = DCIMDir.getParentFile();
-        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(new File(DCIMParentDir.getAbsolutePath() + "/DepuisAndroid/test.pdf"));
+        Partition test = new Partition("The Resilient","Betraying the Martyrs",0,"test.pdf");
+        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(test.getFile());
         for (Bitmap pdfBitmap : pdfBitmaps) // For each bitmap pdf
         {
             // Creation of a new imageView

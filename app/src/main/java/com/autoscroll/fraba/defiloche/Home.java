@@ -28,7 +28,6 @@ public class Home extends AppCompatActivity
 {
     public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
     public final int EXTERNAL_REQUEST = 138;
-    private static final int CODE_PLAY = 1;
 
     AnimationDrawable animationPlay;
     AnimationDrawable animationCreate;
@@ -160,9 +159,23 @@ public class Home extends AppCompatActivity
             }
         };
 
+        View.OnClickListener buttonEffectShare = new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                v.startAnimation(buttonClick);
+                v.startAnimation(buttonClickRelease);
+
+                System.out.println("Test");
+
+                goToShare(v);
+            }
+        };
+
         buttonPlay.setOnClickListener(buttonEffect);
         buttonCreate.setOnClickListener(buttonEffectCreate);
-        buttonShare.setOnClickListener(buttonEffect);
+        buttonShare.setOnClickListener(buttonEffectShare);
 
         ActivityCompat.requestPermissions(Home.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -197,13 +210,19 @@ public class Home extends AppCompatActivity
 
     public void goToPlay(View view)
     {
-        Intent intent = new Intent(this,ChooseSinglePlaylist.class);
+        Intent intent = new Intent(this,Play.class);
         startActivity(intent);
     }
 
     public void goToCreate(View view)
     {
         Intent intent = new Intent(this,Parcourir.class);
+        startActivity(intent);
+    }
+
+    public void goToShare(View view)
+    {
+        Intent intent = new Intent(this,SelectSong.class);
         startActivity(intent);
     }
 
@@ -255,11 +274,13 @@ public class Home extends AppCompatActivity
         // Put the ancient layout id in my button
         buttonLayout.setId(id);
     }
+
     public boolean requestForPermission()
     {
         boolean isPermissionOn = true;
         final int version = Build.VERSION.SDK_INT;
-        if (version >= 23) {
+        if (version >= 23)
+        {
             if (!canAccessExternalSd())
             {
                 isPermissionOn = false;
