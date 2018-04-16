@@ -385,13 +385,6 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                             }
                             if(!fileExist)
                             {
-                                /*
-                                try { copy(targetedFile);}
-                                catch (IOException e){ Log.e("AlertBox OnItemclick", e.getMessage()); }
-                                Log.e("Copying file","copy OK !");
-                                Toast.makeText(getApplicationContext(), "copy OK !", Toast.LENGTH_SHORT).show();
-                                */
-
                                 //communicate the result to ChangePartition activity
                                 Intent intent = new Intent();
                                 intent.putExtra("RESULT_STRING", targetedFile.getPath());
@@ -421,23 +414,6 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         alert11.show();
         Log.e("dialog"," resultOfAlertBox = " + resultOfAlertBox);
         return resultOfAlertBox;
-    }
-
-    //This code comes from StackOverflow
-    public void copy(File src) throws IOException {
-        File dst = new File(userDir.getPath() + "/" + targetedFile.getName());
-        dst.createNewFile();
-
-        try (InputStream in = new FileInputStream(src)) {
-            try (OutputStream out = new FileOutputStream(dst)) {
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-            }
-        }
     }
 
     //This code comes from StackOverflow to allow permission on the /sdcard directory

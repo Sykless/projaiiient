@@ -216,7 +216,7 @@ public class Home extends AppCompatActivity
 
     public void goToCreate(View view)
     {
-        Intent intent = new Intent(this,Parcourir.class);
+        Intent intent = new Intent(this,ChangePartition.class);
         startActivity(intent);
     }
 

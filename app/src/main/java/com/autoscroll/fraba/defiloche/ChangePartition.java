@@ -33,11 +33,11 @@ public class ChangePartition extends AppCompatActivity {
 
     final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
     final File DCIMParentDir = DCIMDir.getParentFile();
-    //TODO changer le nom du dossier
+    //TODO changer le nom du dossier ici ET DANS PARCOURIR
     final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/DepuisAndroid");
 
-    String PDFName = "Partition format PDF";
-    String resultFromParcourir;
+    String PDFName;
+    String resultFromParcourir = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +51,6 @@ public class ChangePartition extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // TextView PDF setup
-        TextView partitionNameView = (TextView) findViewById(R.id.partitionNameView);
-        partitionNameView.setText(PDFName);
-        partitionNameView.setPadding(30, 0, 0, 0);
-
         // Layout modification according to orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -66,6 +61,14 @@ public class ChangePartition extends AppCompatActivity {
         int intButtonWidth = (int) buttonWidth;
         Button ParcourirButton = (Button) findViewById(R.id.ParcourirButton);
         ParcourirButton.setWidth(intButtonWidth);
+
+        // TextView PDF setup
+        TextView partitionNameView = (TextView) findViewById(R.id.partitionNameView);
+        partitionNameView.setPadding(30, 0, 0, 0);
+        if (!pdfChoosen) PDFName = "Partition format PDF";
+        partitionNameView.setText(PDFName);
+
+        //Button validateButton = (Button) findViewById(R.id.validateButton);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -91,13 +94,16 @@ public class ChangePartition extends AppCompatActivity {
 
     public void validateButton(View view)
     {
-        File targetedFile = new File(resultFromParcourir);
-        try { copy(targetedFile);}
-        catch (IOException e){ Log.e("AlertBox OnItemclick", e.getMessage()); }
-        Toast.makeText(getApplicationContext(), "copy OK !", Toast.LENGTH_SHORT).show();
+        if(resultFromParcourir != null) {
+            File targetedFile = new File(resultFromParcourir);
+            try {copy(targetedFile);}
+            catch (IOException e) {Log.e("AlertBox OnItemclick", e.getMessage());}
+            Toast.makeText(getApplicationContext(), "copy OK !", Toast.LENGTH_SHORT).show();
+        }
+        else Toast.makeText(getApplicationContext(), "Vous n'avez sélectionné aucun fichier", Toast.LENGTH_SHORT).show();
     }
 
-    //This code comes from StackOverflow
+    //This code comes from StackOverflow : copying a file
     public void copy(File src) throws IOException {
         File dst = new File(userDir.getPath() + "/" + PDFName);
         dst.createNewFile();

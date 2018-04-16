@@ -23,7 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Parcourir" />
+        <activity android:name=".Parcourir" android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name=".ChangePartition" android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".SelectSong"></activity>
     </application>
 </manifest>
