@@ -2,6 +2,7 @@ package com.autoscroll.fraba.defiloche;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.os.Build;
@@ -35,8 +36,12 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
     public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
     public final int EXTERNAL_REQUEST = 138;
 
+    private static final int RESULT_OK = 1;
+
     //TODO rendre le code propre (en block)
+    int lengthOfDCIMParentDir;
     int nodeCounter;
+    boolean backArrow = false;
     boolean resultOfAlertBox;
     boolean firstTimeOpened;
     boolean prevClickComesListView = true;
@@ -53,7 +58,8 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
 
     final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
     final File DCIMParentDir = DCIMDir.getParentFile();
-    final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/DepuisAndroid");;
+    //TODO changer le nom du dossier
+    final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/DepuisAndroid");
     File targetedFile;
 
     // fichiers : {"Music", "Download", "DCIM", "Android"} for example
@@ -72,6 +78,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         fichiers = DCIMParentDir.listFiles();
         listViewFiles = (ListView) findViewById(R.id.IDFiles);
         listViewFiles.setOnItemClickListener(this);
+        lengthOfDCIMParentDir = fichiers.length;
 
         // Toolbar setup
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -86,6 +93,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         //StackOverFlow | https://stackoverflow.com/questions/13507789/folder-added-in-android-not-visible-via-usb
         MediaScannerConnection.scanFile(this, new String[] {userDir.toString()}, null, null);
 
+        ArrayListRoot.add("break");
         for (int i = 0; i < fichiers.length; i++)
         {
             // directory : {"Cascada.mp3", "Hello.mp3"} for example ("Music" here)
@@ -234,91 +242,119 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
 
     //TODO finir de coder cette partie
     @Override
-    public boolean onSupportNavigateUp()
-    {
-        nodeCounter --;
-        if (nodeCounter < 0)
-        {
-            nodeCounter = 0;
-            FilesIndex.clear();
-            onBackPressed();
-        }
-        else
-        {
-            //fill the ArrayListFiles from the ArrayListRoot
-            boolean fillArraylistFile = true;
-            int breakCounter = 0;
-            for (int i = ArrayListRoot.size() - 2 ; i >= 0 ; i--)
+    public boolean onSupportNavigateUp() {
+        if (backArrow)
             {
-                if (ArrayListRoot.get(i).equals("break")) breakCounter++;
-                if (breakCounter == 2) fillArraylistFile = false;
-                if (fillArraylistFile) ArrayListFiles.add(ArrayListRoot.get(i));
-            }
-
-            //Cut the las part of ArrayListRoot
-            breakCounter = 0;
-            boolean removeListRoot = true;
-            ArrayList<String> temp = new ArrayList<>(ArrayListRoot.size());
-            //int tempLenght = ArrayListRoot.size() - 1;
-            int j = 0;
-            /*for (int i = ArrayListRoot.size() - 1 ; i > 0 ; i--)
-            {
-                Log.e("Navigation Up", "ArrayListRoot.size() = "+ ArrayListRoot.size() + " i = " + i + " i - j = " + (i-j));
-                //if (!removeListRoot) tempLenght --;
-                if (removeListRoot) {
-                    ArrayListRoot.remove(i);
-                    j++;
+                nodeCounter--;
+            if (nodeCounter < 0) {
+                nodeCounter = 0;
+                FilesIndex.clear();
+                onBackPressed();
+            } else {
+                //fill the ArrayListFiles from the ArrayListRoot
+                boolean fillArraylistFile = true;
+                int breakCounter = 0;
+                for (int i = ArrayListRoot.size() - 2; i >= 0; i--) {
+                    if (ArrayListRoot.get(i).equals("break")) breakCounter++;
+                    if (breakCounter == 2) fillArraylistFile = false;
+                    if (fillArraylistFile) ArrayListFiles.add(ArrayListRoot.get(i));
                 }
-                if (ArrayListRoot.get(i - j).equals("break"))
-                {
-                    breakCounter ++;
-                    //removeListRoot = false;
+
+                //Cut the las part of ArrayListRoot
+                breakCounter = 0;
+                boolean removeListRoot = true;
+                ArrayList<String> temp = new ArrayList<>(ArrayListRoot.size());
+                //int tempLenght = ArrayListRoot.size() - 1;
+                int j = 0;
+                while (breakCounter < 2) {
+                    if (ArrayListRoot.get(ArrayListRoot.size() - 1).equals("break")) breakCounter++;
+                    //delete the last element
+                    if (breakCounter < 2) ArrayListRoot.remove(ArrayListRoot.size() - 1);
                 }
-                if (breakCounter == 1) break;
+                for (String s : ArrayListRoot) Log.e("NavigationUp", "ArrayListRoot " + s);
 
-            }
-            for (String s: ArrayListRoot)
-            {
-                Log.e("NavigationUp", "ArrayListRoot " + s);
-            }
-            */
-            /*
-            prevClickComesListView = false;
-            firstTimeOpened = false;
+                //Refresh ArrayListFile
+                breakCounter = 0;
+                ArrayListFiles.clear();
+                int i = 0;
+                int length;
+                Log.e("NavigationUp", "NodeCounter = " + nodeCounter);
+                length = ArrayListRoot.size() - 1;
+                //Log.e("NavigationUp", "length = " +length+" "+ ArrayListRoot.get(length - i) );
+                while (breakCounter < 2) {
+                    //Log.e("NavigationUp", "avant get");
+                    if (ArrayListRoot.get(length - i).equals("break")) {
+                        Log.e("NavigationUp", "après get " + i);
+                        breakCounter++;
+                    } else if (breakCounter < 2) {
+                        ArrayListFiles.add(ArrayListRoot.get(length - i));
+                        Log.e("NavigationUp", "ArrayListRoot " + i + " " + ArrayListRoot.get(length - i));
+                    }
+                    i++;
+                }
+                for (String s : ArrayListFiles) Log.e("NavigationUp", "ArrayListFiles " + s);
+                //adapter.notifyDataSetChanged();//refresh the adapter
+                    /*
+                    for (int i = ArrayListRoot.size() - 1 ; i > 0 ; i--)
+                    {
+                        Log.e("Navigation Up", "ArrayListRoot.size() = "+ ArrayListRoot.size() + " i =  " + i + " j =  " + j + "  (i - j) = " + (i-j));
+                        //if (!removeListRoot) tempLenght --;
+                        //if (removeListRoot)
+                        //{
+                        //}
+                        if (ArrayListRoot.get(i - j).equals("break"))
+                        {
+                            Log.e("Navigation Up", "break ++");
+                            breakCounter ++;
+                            //removeListRoot = false;
+                        }
+                        ArrayListRoot.remove(i);
+                        j++;
+                        if (breakCounter == 2) break;
+                    }
+                    for (String s: ArrayListRoot)
+                    {
+                        Log.e("NavigationUp", "ArrayListRoot " + s);
+                    }
+                    */
+                    /*
+                    prevClickComesListView = false;
+                    firstTimeOpened = false;
 
-            File [] parent;
-            if (currentFileIsEmpty) parent = fichiers[0].getParentFile().listFiles();
-            else parent = fichiers[0].getParentFile().getParentFile().listFiles();
-            //if(fichiers.length > 0) parent = fichiers[0].getParentFile().getParentFile().listFiles();
-            ArrayList<String> actualTemp;
-            ArrayList<String> prevTemp;
-            actualTemp = sortFilesByName(parent, true);
-            prevTemp = sortFilesByName(fichiers, true);
-            //PrevArrayListFiles
-            FilesIndex.clear();
-            ArrayListFiles.clear();
-            PrevArrayListFiles.clear();
-            //if(actualTemp.size() > 0 ) Log.i("Navigation", "Je remplis la liste !");
-            for (int i = 0; i < actualTemp.size(); i++)
-            {
-                ArrayListFiles.add(actualTemp.get(i));
-                FilesIndex.add(actualTemp.get(i));
-                //Log.i("Navigation", "ArrayListFiles " + i + " " + ArrayListFiles.get(i));
-            }
+                    File [] parent;
+                    if (currentFileIsEmpty) parent = fichiers[0].getParentFile().listFiles();
+                    else parent = fichiers[0].getParentFile().getParentFile().listFiles();
+                    //if(fichiers.length > 0) parent = fichiers[0].getParentFile().getParentFile().listFiles();
+                    ArrayList<String> actualTemp;
+                    ArrayList<String> prevTemp;
+                    actualTemp = sortFilesByName(parent, true);
+                    prevTemp = sortFilesByName(fichiers, true);
+                    //PrevArrayListFiles
+                    FilesIndex.clear();
+                    ArrayListFiles.clear();
+                    PrevArrayListFiles.clear();
+                    //if(actualTemp.size() > 0 ) Log.i("Navigation", "Je remplis la liste !");
+                    for (int i = 0; i < actualTemp.size(); i++)
+                    {
+                        ArrayListFiles.add(actualTemp.get(i));
+                        FilesIndex.add(actualTemp.get(i));
+                        //Log.i("Navigation", "ArrayListFiles " + i + " " + ArrayListFiles.get(i));
+                    }
 
-            for (int i = 0; i < prevTemp.size(); i++)
-            {
-                PrevArrayListFiles.add(prevTemp.get(i));
-                //FilesIndex.add(prevTemp.get(i));
-                //Log.e("Navigation", "PrevArrayListFiles " + i + " " + PrevArrayListFiles.get(i));
+                    for (int i = 0; i < prevTemp.size(); i++)
+                    {
+                        PrevArrayListFiles.add(prevTemp.get(i));
+                        //FilesIndex.add(prevTemp.get(i));
+                        //Log.e("Navigation", "PrevArrayListFiles " + i + " " + PrevArrayListFiles.get(i));
+                    }
+                    //for (int i = 0; i < parent.length; i++) Log.i("Navigation", "parent " + i + " " + parent[i].getName());
+                    fichiers = parent;
+                    adapter.notifyDataSetChanged();//refresh the adapter
+                    //listViewFiles.invalidateViews();
+                    */
             }
-            //for (int i = 0; i < parent.length; i++) Log.i("Navigation", "parent " + i + " " + parent[i].getName());
-            fichiers = parent;
-            adapter.notifyDataSetChanged();//refresh the adapter
-            //listViewFiles.invalidateViews();
-            */
         }
-
+        else onBackPressed();
         return true;
     }
 
@@ -333,7 +369,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                     public void onClick(DialogInterface dialog, int id) {
                         //Log.e("dialog"," id = " + id);
                         //resultOfAlertBox = true;
-                        String extension = targetedFile.getName().substring(targetedFile.getName().indexOf(".") + 1);
+                        String extension = targetedFile.getName().substring(targetedFile.getName().lastIndexOf(".") + 1);
                         if(extension.equals("pdf"))
                         {
                             Log.e("Copying file","displayAlertBox(targetedFile.getName()) return " + resultOfAlertBox);
@@ -349,10 +385,11 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                             }
                             if(!fileExist)
                             {
-                                try { copy(targetedFile);}
-                                catch (IOException e){ Log.e("AlertBox OnItemclick", e.getMessage()); }
-                                Log.e("Copying file","copy OK !");
-                                Toast.makeText(getApplicationContext(), "copy OK !", Toast.LENGTH_SHORT).show();
+                                //communicate the result to ChangePartition activity
+                                Intent intent = new Intent();
+                                intent.putExtra("RESULT_STRING", targetedFile.getPath());
+                                setResult(RESULT_OK, intent);
+                                finish();
                             }
                         }
                         else
@@ -377,23 +414,6 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         alert11.show();
         Log.e("dialog"," resultOfAlertBox = " + resultOfAlertBox);
         return resultOfAlertBox;
-    }
-
-    //This code comes from StackOverflow
-    public void copy(File src) throws IOException {
-        File dst = new File(userDir.getPath() + "/" + targetedFile.getName());
-        dst.createNewFile();
-
-        try (InputStream in = new FileInputStream(src)) {
-            try (OutputStream out = new FileOutputStream(dst)) {
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-            }
-        }
     }
 
     //This code comes from StackOverflow to allow permission on the /sdcard directory
