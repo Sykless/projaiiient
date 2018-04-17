@@ -3,11 +3,13 @@ package com.autoscroll.fraba.defiloche;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +26,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+
 public class Home extends AppCompatActivity
 {
     public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -36,12 +42,17 @@ public class Home extends AppCompatActivity
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
 
+    PartitionActivity app;
+    ArrayList<Partition> partitionList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
         requestForPermission();
+
+        System.out.println("Home");
 
         // Layout items declaration
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -58,6 +69,10 @@ public class Home extends AppCompatActivity
         // Toolbar setup
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        // Partition ArrayList setup
+        app = (PartitionActivity) getApplicationContext();
+        partitionList = app.getPartitionList();
 
         // Layout modification according to orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
@@ -139,8 +154,6 @@ public class Home extends AppCompatActivity
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
 
-                System.out.println("Test");
-
                 goToPlay(v);
             }
         };
@@ -153,8 +166,6 @@ public class Home extends AppCompatActivity
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
 
-                System.out.println("Test");
-
                 goToCreate(v);
             }
         };
@@ -166,8 +177,6 @@ public class Home extends AppCompatActivity
             {
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
-
-                System.out.println("Test");
 
                 goToShare(v);
             }
@@ -216,7 +225,19 @@ public class Home extends AppCompatActivity
 
     public void goToCreate(View view)
     {
-        Intent intent = new Intent(this,Parcourir.class);
+        Intent intent;
+        partitionList = app.getPartitionList();
+
+        if (partitionList == null || partitionList.size() == 0)
+        {
+            intent = new Intent(this,NewCreate.class);
+        }
+        else
+        {
+            intent = new Intent(this,SelectSong.class);
+        }
+
+        // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 

@@ -52,5 +52,5 @@ public class Partition
     void setFile(String fileName)
     {
         pdfFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getParentFile().getAbsolutePath() + "/DepuisAndroid/" + fileName);
-        }
+    }
         }

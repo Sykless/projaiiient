@@ -18,7 +18,6 @@ public class PartitionActivity extends Application
     public void onCreate()
     {
         super.onCreate();
-        System.out.println("Open app");
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         Gson gson = new Gson();
@@ -32,30 +31,62 @@ public class PartitionActivity extends Application
         }
         else
         {
-            System.out.println("ArrayList vide !"); // TODO Maybe add a link to Create if there isn't any partition
+            System.out.println("ArrayList vide !");
         }
 
-        // Here's the code to write the ArrayList
+
+
         // TODO Add the ArrayList writing in Create menu
+        // How to write in the ArrayList
 
         /*
-        ArrayList<Partition> list = new ArrayList<Partition>();
+            PartitionActivity app = (PartitionActivity) getApplicationContext();
+            ArrayList<Partition> list = app.getPartitionList();
 
-        list.add(new Partition("The Resilient","Betraying the Martyrs","test.pdf"));
+            if (list == null)
+            {
+                list = new ArrayList<>();
+            }
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        Gson gson = new Gson();
+            list.add(new Partition("Artist","Title",speed,"test.pdf"));
 
-        String json = gson.toJson(list);
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            Gson gson = new Gson();
 
-        editor.putString("arrayList", json); -- "arrayList" is only an ID, you can use "jambon" if you like as long as you use the same ID to get the data back
-        editor.apply();
+            String json = gson.toJson(list);
+
+            editor.putString("arrayList", json); // "arrayList" is only an ID, you can use "jambon" if you like as long as you use the same ID to get the data back
+            editor.apply();
+        */
+
+
+        // Code to detect a key on the keyboard
+        /*
+        takeKeyEvents(true);
+
+        public boolean onKeyUp(int keyCode, KeyEvent event)
+        {
+            if (keyCode == KeyEvent.KEYCODE_ENTER)
+            {
+                System.out.println(""+keyCode);
+            }
+
+            return true;
+        }
         */
     }
 
     ArrayList<Partition> getPartitionList()
     {
         return arrayListPartition;
+    }
+    void addPartition(Partition partition)
+    {
+        arrayListPartition.add(partition);
+    }
+    void savePartitionList(ArrayList<Partition> partitionList)
+    {
+        arrayListPartition = partitionList;
     }
 }
