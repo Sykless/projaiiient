@@ -8,6 +8,8 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -42,6 +44,8 @@ public class ChangePartition extends AppCompatActivity {
     String PDFName;
     String resultFromParcourir = null;
 
+    float policeSize;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,16 +63,17 @@ public class ChangePartition extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        //policeSize = convertToFloat(size.x,0.013);
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) // Portait orientation
         {
             size.y = size.y/3;
+            policeSize = convertToFloat(size.x,0.013);
         }
-
-
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) // Landscape orientation
         {
             size.x = size.x/2;
+            policeSize = convertToFloat(size.y,0.013);
         }
 
         // Set the RelativeLayout position
@@ -76,10 +81,17 @@ public class ChangePartition extends AppCompatActivity {
         relativeLayoutParcourir.setY(convertToFloat(size.y,0.01));
 
         // Set the button at 20% of the screen width
-        double buttonWidth = new Double(size.x * 0.2);
+        double buttonWidth = new Double(size.x * 0.18);
         int intButtonWidth = (int) buttonWidth;
         Button ParcourirButton = (Button) findViewById(R.id.ParcourirButton);
-        //ParcourirButton.setWidth(intButtonWidth);
+        ParcourirButton.setWidth(intButtonWidth);
+        ParcourirButton.setTextSize(policeSize);
+
+        // buttons police setup
+        Button validateButton = (Button) findViewById(R.id.validateButton);
+        Button paramButton = (Button) findViewById(R.id.paramButton);
+        validateButton.setTextSize(policeSize);
+        paramButton.setTextSize(policeSize);
 
         // TextView PDF setup
         TextView partitionNameView = (TextView) findViewById(R.id.partitionNameView);
@@ -89,41 +101,26 @@ public class ChangePartition extends AppCompatActivity {
 
         // Set TextView artiste position
         TextView artisteTV = (TextView) findViewById(R.id.artisteTV);
-        //artisteTV.setY(convertToFloat(size.y,0.01));
-        //artisteTV.setX(convertToFloat(size.x,0.1));
+        artisteTV.setTextSize(policeSize);
+        artisteTV.getLayoutParams().width = (int) (size.x*0.13);
 
-        /*
+
         // Set EditText artiste position
         EditText artisteED = (EditText) findViewById(R.id.artisteED);
-        artisteED.setY(convertToFloat(size.y,0.4));
-        */
+        artisteED.setTextSize(convertToFloat((int)policeSize,0.8));
 
         // Set artisteLayout artiste position
-        LinearLayout artisteLayout = (LinearLayout) findViewById(R.id.artisteLayout);
-        //artisteLayout.setY(convertToFloat(size.y,0.01));
-        //artisteLayout.setX(convertToFloat(size.x,0.02));
+        //LinearLayout artisteLayout = (LinearLayout) findViewById(R.id.artisteLayout);
 
-
-        /*
         // Set TextView Titre position
         TextView titreTV = (TextView) findViewById(R.id.titreTV);
-        titreTV.setY(convertToFloat(size.y,0.5));
-        titreTV.setX(convertToFloat(size.x,0.01));
+        titreTV.setTextSize(policeSize);
+        titreTV.getLayoutParams().width = (int) (size.x*0.13);
 
-        // Set titreLayout position
-        LinearLayout titreLayout = (LinearLayout) findViewById(R.id.titreLayout);
-        titreLayout.setY(convertToFloat(size.y,0.5));
-        //titreLayout.setX(convertToFloat(size.x,0.02));
-        */
-
-
-        /*
         // Set EditText Titre position
         EditText titreED = (EditText) findViewById(R.id.titreED);
-        titreED.setY(convertToFloat(size.y,0.5));
-        */
+        titreED.setTextSize(convertToFloat((int)policeSize,0.8));
 
-        //Button validateButton = (Button) findViewById(R.id.validateButton);
     }
 
     public float convertToFloat(int nbA, double percentage)
@@ -134,13 +131,14 @@ public class ChangePartition extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FROM_CHANGE_PARTITION) {
-            if (resultCode == RESULT_OK) {
+        if (requestCode == FROM_CHANGE_PARTITION)
+        {
+            if (resultCode == RESULT_OK)
+            {
                 pdfChoosen = true;
                 //Use Data to get string
                 resultFromParcourir = data.getStringExtra("RESULT_STRING");
                 PDFName = resultFromParcourir.substring(resultFromParcourir.lastIndexOf("/") + 1);
-                Log.e("changePartition", "file name = " + PDFName);
                 TextView partitionNameView = (TextView) findViewById(R.id.partitionNameView);
                 partitionNameView.setText(PDFName);
                 partitionNameView.setTextColor(Color.BLACK);
@@ -151,7 +149,14 @@ public class ChangePartition extends AppCompatActivity {
     public void goToParcourir(View view)
     {
         Intent intent = new Intent(this, Parcourir.class);
+        intent.putExtra("PREVIOUS_ACTIVITY", "CHANGE_PARTITION");
         startActivityForResult(intent, FROM_CHANGE_PARTITION);
+    }
+
+    public void goToParam(View view)
+    {
+        Intent intent = new Intent(this, ChangeSongParam.class);
+        startActivity(intent);
     }
 
     public void validateButton(View view)

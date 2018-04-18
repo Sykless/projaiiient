@@ -227,7 +227,8 @@ public class Home extends AppCompatActivity
     {
         Intent intent;
         partitionList = app.getPartitionList();
-
+        intent = new Intent(this,ChangePartition.class);
+        /*
         if (partitionList == null || partitionList.size() == 0)
         {
             intent = new Intent(this,NewCreate.class);
@@ -236,6 +237,7 @@ public class Home extends AppCompatActivity
         {
             intent = new Intent(this,SelectSong.class);
         }
+        */
 
         // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);

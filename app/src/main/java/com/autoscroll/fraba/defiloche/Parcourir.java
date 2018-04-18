@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -365,12 +366,14 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
 
         builder1.setPositiveButton(
                 "Oui",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //Log.e("dialog"," id = " + id);
-                        //resultOfAlertBox = true;
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        Intent prevActivityIntent = getIntent();
+                        String prevAcvtivityName = prevActivityIntent.getStringExtra("PREVIOUS_ACTIVITY");
                         String extension = targetedFile.getName().substring(targetedFile.getName().lastIndexOf(".") + 1);
-                        if(extension.equals("pdf"))
+                        if(extension.equals("pdf") && prevAcvtivityName.equals("CHANGE_PARTITION"))
                         {
                             Log.e("Copying file","displayAlertBox(targetedFile.getName()) return " + resultOfAlertBox);
                             boolean fileExist = false;
@@ -390,6 +393,25 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                                 intent.putExtra("RESULT_STRING", targetedFile.getPath());
                                 setResult(RESULT_OK, intent);
                                 finish();
+                            }
+                        }
+                        else if (prevAcvtivityName.equals("CHANGE_SONG_PARAM"))
+                        {
+                            //check if the file is an audio one
+                            ArrayList<String> audioExention = new ArrayList<>(Arrays.asList("mp3", "m4a", "wav","aac","flac","mid","xmf","mxmf","rttl","rtx","ota","imy","mkv","wav","ogg"));
+                            boolean audioFile = false;
+                            for (String s : audioExention) if(extension.equals(s)) audioFile = true;
+                            if(audioFile)
+                            {
+                                //communicate the result to ChangePartition activity
+                                Intent intent = new Intent();
+                                intent.putExtra("RESULT_STRING", targetedFile.getPath());
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            }
+                            else
+                            {
+                                Toast.makeText(getApplicationContext(), "Ce n'est pas un fichier audio", Toast.LENGTH_SHORT).show();
                             }
                         }
                         else
