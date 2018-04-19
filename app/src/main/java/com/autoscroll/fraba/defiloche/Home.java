@@ -52,8 +52,6 @@ public class Home extends AppCompatActivity
         setContentView(R.layout.home_layout);
         requestForPermission();
 
-        System.out.println("Home");
-
         // Layout items declaration
         Toolbar toolbar = findViewById(R.id.toolbar);
         LinearLayout linearLayout = findViewById(R.id.linearLayout);
@@ -219,7 +217,18 @@ public class Home extends AppCompatActivity
 
     public void goToPlay(View view)
     {
-        Intent intent = new Intent(this,Play.class);
+        Intent intent;
+        partitionList = app.getPartitionList();
+
+        if (partitionList == null || partitionList.size() == 0)
+        {
+            intent = new Intent(this,NewCreate.class);
+        }
+        else
+        {
+            intent = new Intent(this,SelectSong.class);
+        }
+
         startActivity(intent);
     }
 
@@ -239,13 +248,16 @@ public class Home extends AppCompatActivity
         }
         */
 
-        // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent = new Intent(this,CreatePlaylist.class);
+
+        intent.putExtra("menuValue", 2);
         startActivity(intent);
     }
 
     public void goToShare(View view)
     {
-        Intent intent = new Intent(this,SelectSong.class);
+        Intent intent = new Intent(this,NewCreate.class);
+        intent.putExtra("menuValue", 3);
         startActivity(intent);
     }
 

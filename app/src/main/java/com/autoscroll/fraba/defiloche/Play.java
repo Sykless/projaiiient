@@ -44,6 +44,7 @@ public class Play extends AppCompatActivity {
     RelativeLayout textLayout;
     ImageView playPauseButton;
     ConstraintLayout toolbarLayout;
+    FrameLayout backLayout;
     FrameLayout homeLayout;
     TextView textTitle;
 
@@ -76,6 +77,7 @@ public class Play extends AppCompatActivity {
         textLayout = findViewById(R.id.textLayout);
         toolbarLayout = findViewById(R.id.toolbarLayout);
         homeLayout = findViewById(R.id.homeLayout);
+        backLayout = findViewById(R.id.backLayout);
         linearLayout = findViewById(R.id.main_view);
         sView = findViewById(R.id.scroll);
         textTitle = findViewById(R.id.textTitle);
@@ -93,6 +95,7 @@ public class Play extends AppCompatActivity {
 
         textLayout.getViewTreeObserver().addOnGlobalLayoutListener(textAdapter);
         playPauseLayout.setOnClickListener(playPauseListener);
+        linearLayout.setOnClickListener(playPauseListener);
         replayLayout.setOnClickListener(replayListener);
         homeLayout.setOnClickListener(new View.OnClickListener()
         {
@@ -102,14 +105,27 @@ public class Play extends AppCompatActivity {
                 goToHome();
             }
         });
+        backLayout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+            }
+        });
 
         Display display = getWindowManager().getDefaultDisplay();
         size = new Point();
         display.getSize(size);
         endScreen = (float) size.y;
 
-        Partition test = new Partition("The Resilient","Betraying the Martyrs",0,"test.pdf");
-        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(test.getFile());
+        PartitionActivity app = (PartitionActivity) getApplicationContext();
+
+        int songNumber = getIntent().getIntExtra("songNumber", 0);
+        Partition partitionToPlay = app.getPartitionList().get(songNumber);
+
+        ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(partitionToPlay.getFile());
+
         for (Bitmap pdfBitmap : pdfBitmaps) // For each bitmap pdf
         {
             // Creation of a new imageView
@@ -199,7 +215,7 @@ public class Play extends AppCompatActivity {
 
                 movePartition = ObjectAnimator.ofInt(sView, "scrollY", sView.getScrollY(), bottomScroll);
                 movePartition.addListener(animatorPause);
-                movePartition.setDuration(Math.round(3000*(1 - (float)sView.getScrollY()/bottomScroll)));
+                movePartition.setDuration(Math.round(60000*(1 - (float)sView.getScrollY()/bottomScroll)));
 
                 animatorSet = new AnimatorSet();
                 animatorSet.play(movePartition);

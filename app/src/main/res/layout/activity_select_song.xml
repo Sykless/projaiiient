@@ -10,7 +10,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/cyan"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
@@ -25,16 +25,6 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_alignBottom="@+id/toolbar"
             android:layout_alignParentStart="true">
-
-            <View
-                android:id="@+id/selectedBackground"
-                android:layout_width="56dp"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@drawable/rectangle"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/backLayout"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginStart="2dp"/>
 
             <FrameLayout
                 android:id="@+id/backLayout"
@@ -55,17 +45,17 @@
                     android:id="@+id/backButton"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_keyboard_backspace_white_48dp"
-                    tools:layout_editor_absoluteX="16dp"
-                    tools:layout_editor_absoluteY="6dp"/>
+                    android:src="@drawable/ic_keyboard_backspace_white_48dp" />
             </FrameLayout>
+
 
             <RelativeLayout
                 android:id="@+id/textTitleLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_centerHorizontal="true"
-                android:layout_marginStart="14dp"
+                android:gravity="center_horizontal"
+                android:background="@color/darkcyan"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/backLayout"
                 app:layout_constraintTop_toTopOf="parent">
@@ -74,6 +64,8 @@
                     android:id="@+id/textTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_alignParentStart="true"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
@@ -88,7 +80,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_centerHorizontal="true"
-                android:layout_marginStart="22dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textTitleLayout"
                 app:layout_constraintTop_toTopOf="parent">
@@ -97,6 +88,8 @@
                     android:id="@+id/textArtist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_alignParentStart="true"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
@@ -128,6 +121,50 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:src="@drawable/ic_home_white_48dp"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/createLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:background="?actionBarItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/createButton"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_add_circle_white_48dp" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/deleteLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:background="?actionBarItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/createLayout"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/deleteButton"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_delete_white_48dp" />
             </FrameLayout>
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.Toolbar>

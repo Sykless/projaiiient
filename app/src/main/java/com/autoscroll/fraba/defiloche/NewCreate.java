@@ -25,6 +25,9 @@ public class NewCreate extends AppCompatActivity
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F, 1F); // Unfading animation on button when clicked
 
+    private static final int PARTITION = 2;
+    private static final int PLAYLIST = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -35,6 +38,33 @@ public class NewCreate extends AppCompatActivity
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size); // size.x = device width - size.y = device height
+
+        // Toolbar icons setup
+        FrameLayout homeLayout = findViewById(R.id.homeLayout);
+        FrameLayout backLayout = findViewById(R.id.backLayout);
+        FrameLayout createLayout = findViewById(R.id.createLayout);
+
+        homeLayout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                goToHome();
+            }
+        });
+        backLayout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+            }
+        });
+        createLayout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                goToCreate();
+            }
+        });
 
         // Default values
         float textSize = 24;
@@ -65,6 +95,14 @@ public class NewCreate extends AppCompatActivity
         TextView Ohoh = findViewById(R.id.Ohoh);
         TextView trouvay = findViewById(R.id.trouvay);
 
+        int menuValue = getIntent().getIntExtra("menuValue", 0);
+
+        if (menuValue == PLAYLIST)
+        {
+            trouvay.setText("n'avez aucune playlist...");
+            textCreate.setText("Créer votre première playlist");
+        }
+
         textCreate.setTextSize(textSize);
         Ohoh.setTextSize(textSize);
         trouvay.setTextSize(textSize);
@@ -88,25 +126,12 @@ public class NewCreate extends AppCompatActivity
                 goToCreate();
             }
         });
-
-        FrameLayout createLayout = findViewById(R.id.createLayout);
-        createLayout.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                v.startAnimation(buttonClick);
-                v.startAnimation(buttonClickRelease);
-
-                goToCreate();
-            }
-        });
     }
 
     public void goToCreate()
     {
         /*
-            Intent intent = new Intent(this, Play.class);
+            Intent intent = new Intent(this, Create.class);
             startActivity(intent);
         */
 
@@ -118,7 +143,10 @@ public class NewCreate extends AppCompatActivity
             list = new ArrayList<>();
         }
 
-        list.add(new Partition("Artist","Title",0,"test.pdf"));
+        list.add(new Partition("Axel Bauer","eteins la lumiere",0,"Axel Bauer - eteins la lumiere.pdf"));
+        list.add(new Partition("Bob Dylan","Knockin’ on Heavens Door",0,"Bob Dylan – Knockin’ on Heavens Door.pdf"));
+        list.add(new Partition("Eric Clapton","COCAINE",0,"COCAINE - Eric Clapton menu.pdf"));
+        list.add(new Partition("The Rolling Stones","Honky Tonk Woman",0,"Honky Tonk Woman - The Rolling Stones.pdf"));
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -129,5 +157,11 @@ public class NewCreate extends AppCompatActivity
         editor.putString("arrayList", json); // "arrayList" is only an ID, you can use "jambon" if you like as long as you use the same ID to get the data back
         editor.apply();
         app.savePartitionList(list);
+    }
+
+    public void goToHome()
+    {
+        Intent intent = new Intent(this, Home.class);
+        startActivity(intent);
     }
 }
