@@ -1,9 +1,12 @@
 package com.autoscroll.fraba.defiloche;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.preference.PreferenceManager;
+import android.provider.Telephony;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class AddPartitionToPlaylist extends AppCompatActivity
@@ -43,7 +49,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
     RelativeLayout textTitle;
     RelativeLayout textArtist;
 
-    ArrayList<Integer> playlist = new ArrayList<Integer>();
+    ArrayList<Integer> playlist = new ArrayList<>();
     int[] numberPlaylist;
 
     @Override
@@ -292,6 +298,43 @@ public class AddPartitionToPlaylist extends AppCompatActivity
 
     void createPlaylist()
     {
+        PartitionActivity app = (PartitionActivity) getApplicationContext();
+        ArrayList<Playlist> playlistList = app.getPlaylistList();
+        ArrayList<Partition> partitionList = app.getPartitionList();
+
+        String playlistName = getIntent().getStringExtra("playlistName");
+
+        boolean foundIt = false;
+        int playlistNumber = 0;
+
+        for (int i = 0 ; i < playlistList.size() && !foundIt ; i++)
+        {
+            if (playlistList.get(i).getName().equals(playlistName))
+            {
+                playlistNumber = i;
+                foundIt = true;
+            }
+        }
+
+        Playlist playlistToCreate = playlistList.get(playlistNumber);
+
+        for (int i = 0 ; i < playlist.size() ; i++)
+        {
+            playlistToCreate.addPartition(partitionList.get(playlist.get(i)));
+        }
+
+
+        playlistList.add(playlistToCreate);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        Gson gson = new Gson();
+
+        String json = gson.toJson(playlistList);
+
+        editor.putString("playlistList", json);
+        editor.apply();
+
         Intent intent = new Intent(this, Home.class);
         startActivity(intent);
     }

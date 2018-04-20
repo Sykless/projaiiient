@@ -154,7 +154,7 @@ public class NewCreate extends AppCompatActivity
 
         String json = gson.toJson(list);
 
-        editor.putString("arrayList", json); // "arrayList" is only an ID, you can use "jambon" if you like as long as you use the same ID to get the data back
+        editor.putString("partitionList", json);
         editor.apply();
         app.savePartitionList(list);
     }

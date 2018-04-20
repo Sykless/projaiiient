@@ -19,19 +19,29 @@ public class Partition
         setArtist(artist);
         setTitle(title);
         setSpeed(speed);
-        setFile(fileName);
+        createFile(fileName);
+    }
+
+    Partition(String artist, String title, int speed, File file)
+    {
+        setArtist(artist);
+        setTitle(title);
+        setSpeed(speed);
+        setFile(file);
     }
 
     String getTitle()
     {
         return mTitle;
     }
-
     String getArtist()
     {
         return mArtist;
     }
-
+    int getSpeed()
+    {
+        return mSpeed;
+    }
     File getFile()
     {
         return pdfFile;
@@ -49,8 +59,12 @@ public class Partition
     {
         mSpeed = speed;
     }
-    void setFile(String fileName)
+    void setFile(File file)
+    {
+        pdfFile = file;
+    }
+    void createFile(String fileName)
     {
         pdfFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getParentFile().getAbsolutePath() + "/DepuisAndroid/" + fileName);
     }
-        }
+}

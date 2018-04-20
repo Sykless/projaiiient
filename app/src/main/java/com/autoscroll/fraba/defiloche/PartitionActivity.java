@@ -3,16 +3,19 @@ package com.autoscroll.fraba.defiloche;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.provider.Telephony;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.lang.reflect.Type;
 
 public class PartitionActivity extends Application
 {
-    ArrayList<Partition> arrayListPartition = new ArrayList<Partition>();
+    ArrayList<Partition> arrayListPartition = new ArrayList<>();
+    ArrayList<Playlist> arrayListPlaylist = new ArrayList<>();
 
     @Override
     public void onCreate()
@@ -21,23 +24,56 @@ public class PartitionActivity extends Application
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         Gson gson = new Gson();
-        String json = sharedPrefs.getString("arrayList", null);
+
+        String json = sharedPrefs.getString("partitionList", null);
         Type type = new TypeToken<ArrayList<Partition>>() {}.getType();
         arrayListPartition = gson.fromJson(json, type);
 
-        if (arrayListPartition != null)
+        json = sharedPrefs.getString("playlistList", null);
+        type = new TypeToken<ArrayList<Playlist>>() {}.getType();
+        arrayListPlaylist = gson.fromJson(json, type);
+
+        if (arrayListPlaylist == null)
         {
-            System.out.println(arrayListPartition.get(0).getArtist() + " - " + arrayListPartition.get(0).getTitle());
+            System.out.println("ArrayList empty lol !");
         }
         else
         {
-            System.out.println("ArrayList vide !");
+            System.out.println(arrayListPlaylist.get(0).getName() + " " + (arrayListPlaylist.get(0).getPartitionList().get(0).getArtist()));
         }
+    }
 
+    ArrayList<Partition> getPartitionList()
+    {
+        return arrayListPartition;
+    }
+    ArrayList<Playlist> getPlaylistList()
+    {
+        return arrayListPlaylist;
+    }
 
+    void addPartition(Partition partition)
+    {
+        arrayListPartition.add(partition);
+    }
+    void addPlaylist(Playlist playlist)
+    {
+        arrayListPlaylist.add(playlist);
+    }
 
-        // TODO Add the ArrayList writing in Create menu
-        // How to write in the ArrayList
+    void savePartitionList(ArrayList<Partition> partitionList)
+    {
+        arrayListPartition = partitionList;
+    }
+
+    void savePlaylistList(ArrayList<Playlist> playlistList)
+    {
+        arrayListPlaylist = playlistList;
+    }
+}
+
+// TODO Add the ArrayList writing in Create menu
+// How to write in the ArrayList
 
         /*
             PartitionActivity app = (PartitionActivity) getApplicationContext();
@@ -56,12 +92,12 @@ public class PartitionActivity extends Application
 
             String json = gson.toJson(list);
 
-            editor.putString("arrayList", json); // "arrayList" is only an ID, you can use "jambon" if you like as long as you use the same ID to get the data back
+            editor.putString("partitionList", json); // "arrayList" is only an ID, you can use "jambon" if you like as long as you use the same ID to get the data back
             editor.apply();
         */
 
 
-        // Code to detect a key on the keyboard
+// Code to detect a key on the keyboard
         /*
         takeKeyEvents(true);
 
@@ -75,18 +111,3 @@ public class PartitionActivity extends Application
             return true;
         }
         */
-    }
-
-    ArrayList<Partition> getPartitionList()
-    {
-        return arrayListPartition;
-    }
-    void addPartition(Partition partition)
-    {
-        arrayListPartition.add(partition);
-    }
-    void savePartitionList(ArrayList<Partition> partitionList)
-    {
-        arrayListPartition = partitionList;
-    }
-}

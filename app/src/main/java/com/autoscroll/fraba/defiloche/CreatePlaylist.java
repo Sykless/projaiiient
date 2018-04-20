@@ -1,8 +1,10 @@
 package com.autoscroll.fraba.defiloche;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,10 +16,16 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+
 public class CreatePlaylist extends AppCompatActivity
 {
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F, 1F); // Unfading animation on button when clicked
+
+    EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -47,6 +55,8 @@ public class CreatePlaylist extends AppCompatActivity
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size); // size.x = device width - size.y = device height
+
+        editText = findViewById(R.id.editText);
 
         // Default values
         int marginTop = 0;
@@ -114,7 +124,36 @@ public class CreatePlaylist extends AppCompatActivity
 
     public void goToAdd()
     {
-        Intent intent = new Intent(this, AddPartitionToPlaylist.class);
-        startActivity(intent);
+        String playlistName = editText.getText().toString();
+
+        if (playlistName.length() > 0)
+        {
+            PartitionActivity app = (PartitionActivity) getApplicationContext();
+            ArrayList<Playlist> list = app.getPlaylistList();
+
+            if (list == null) {
+                list = new ArrayList<>();
+            }
+
+            list.add(new Playlist(playlistName));
+
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            Gson gson = new Gson();
+
+            String json = gson.toJson(list);
+
+            editor.putString("partitionList", json);
+            editor.apply();
+            app.savePlaylistList(list);
+
+            Intent intent = new Intent(this, AddPartitionToPlaylist.class);
+            intent.putExtra("playlistName", playlistName);
+            startActivity(intent);
+        }
+        else
+        {
+            System.out.println("Nope !");
+        }
     }
 }

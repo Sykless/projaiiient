@@ -28,11 +28,12 @@
         <activity android:name=".ChangePartition" />
         <activity android:name=".SelectSong" />
         <activity android:name=".NewCreate" />
-        <activity android:name=".ChangeSongParam"/>
+        <activity android:name=".ChangeSongParam" />
         <activity
             android:name=".AddPartitionToPlaylist"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".CreatePlaylist"/>
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".CreatePlaylist" />
+        <activity android:name=".SelectPlaylist"></activity>
     </application>
 
 </manifest>
