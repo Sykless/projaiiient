@@ -1,6 +1,7 @@
 package com.autoscroll.fraba.defiloche;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +20,13 @@ import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class ChangePartition extends AppCompatActivity {
     private static final int FROM_CHANGE_PARTITION = 11;
@@ -44,83 +50,159 @@ public class ChangePartition extends AppCompatActivity {
     String PDFName;
     String resultFromParcourir = null;
 
-    float policeSize;
+    //settings wich change regardind the screen orientation
+    int parcouriButtonHeight = 100;
+    int paramButtonHeight;
+    int paramButtonWidth;
+    int extremeMargin = 16;
+    int titreLayoutHeight = 200;
+    int titreLayoutWidth = 200;
+    int titreHeight = 60;
+    int titreMargin = 15;
+    int EDHeight = 40;
+    int titreEDHeight = 40;
+    int validateHeight;
+    int validateWidth;
+    int EDMargin;
+
+
+    float policeSize = 16;
+    float buttonPoliceSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_partition_layout);
 
+        // Toolbar icons setup
+        FrameLayout homeLayout = findViewById(R.id.homeLayout);
+        FrameLayout backLayout = findViewById(R.id.backLayout);
+
+        homeLayout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                goToHome();
+            }
+        });
+        backLayout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+            }
+        });
+
+
         // Layout modification according to orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size); // size.x = device width - size.y = device height
 
-        // Toolbar setup
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        //policeSize = convertToFloat(size.x,0.013);
-
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) // Portait orientation
         {
-            size.y = size.y/3;
-            policeSize = convertToFloat(size.x,0.013);
+            buttonPoliceSize = convertToFloat(size.x,0.02);
+            policeSize = convertToFloat(size.x,0.02);
+            parcouriButtonHeight = (int)(size.x*0.1);
+            paramButtonHeight = (int)(size.x * 0.07);
+            paramButtonWidth = (int)(size.x * 0.5);
+            extremeMargin = (int) (size.x * 0.022);
+            titreLayoutHeight = (int) (size.x * 0.38);
+            titreLayoutWidth = (int) (size.x * 0.6);
+            titreHeight = (int) (size.x * 0.08);
+            titreMargin = (int) (size.x * 0.017);
+            EDHeight = titreHeight; //EDHeight = (int) (size.y* 0.093);
+            EDMargin = (int) (size.x * 0.012); //titreEDHeight = (int) (size.y* 0.1);
+            titreEDHeight = titreHeight;
+            validateHeight = (int) (size.x * 0.1);
+            validateWidth = (int) (size.x * 0.18);
+
         }
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) // Landscape orientation
         {
-            size.x = size.x/2;
-            policeSize = convertToFloat(size.y,0.013);
+            buttonPoliceSize = convertToFloat(size.y,0.02);
+            policeSize = convertToFloat(size.y,0.02);
+            parcouriButtonHeight = (int)(size.y*0.1);
+            paramButtonHeight = (int)(size.y * 0.07);
+            paramButtonWidth = (int)(size.y * 0.5);
+            extremeMargin = (int) (size.y * 0.022);
+            titreLayoutHeight = (int) (size.y * 0.38);
+            titreLayoutWidth = (int) (size.y * 0.6);
+            titreHeight = (int) (size.y * 0.08);
+            titreMargin = (int) (size.y * 0.017);
+            EDHeight = titreHeight ; //EDHeight = (int) (size.y* 0.093);
+            EDMargin = (int) (size.x * 0.012);
+            titreEDHeight = titreHeight; //titreEDHeight = (int) (size.y* 0.1);
+            validateHeight = (int) (size.y * 0.1);
+            validateWidth = (int) (size.y * 0.18);
         }
 
-        // Set the RelativeLayout position
-        RelativeLayout relativeLayoutParcourir = (RelativeLayout) findViewById(R.id.relativeLayoutParcourir);
-        relativeLayoutParcourir.setY(convertToFloat(size.y,0.01));
-
-        // Set the button at 20% of the screen width
-        double buttonWidth = new Double(size.x * 0.18);
-        int intButtonWidth = (int) buttonWidth;
+        // Set the button at 25% "parcourir" line
         Button ParcourirButton = (Button) findViewById(R.id.ParcourirButton);
-        ParcourirButton.setWidth(intButtonWidth);
-        ParcourirButton.setTextSize(policeSize);
+        ParcourirButton.setWidth((int)(size.x * 0.25));
+        ParcourirButton.setTextSize(buttonPoliceSize);
 
-        // buttons police setup
-        Button validateButton = (Button) findViewById(R.id.validateButton);
+        //set the size of the "parcourir" line
+        RelativeLayout relativeLayoutParcourir = (RelativeLayout) findViewById(R.id.relativeLayoutParcourir);
+        relativeLayoutParcourir.getLayoutParams().height = parcouriButtonHeight;
+        ConstraintLayout.LayoutParams parcourirLineParam = (ConstraintLayout.LayoutParams)relativeLayoutParcourir.getLayoutParams();
+        parcourirLineParam.setMargins(0, extremeMargin, 0 ,0);
+
+        // buttons param setup
         Button paramButton = (Button) findViewById(R.id.paramButton);
-        validateButton.setTextSize(policeSize);
-        paramButton.setTextSize(policeSize);
+        paramButton.setWidth(paramButtonWidth);
+        paramButton.setHeight(paramButtonHeight);
+        paramButton.setTextSize(buttonPoliceSize);
+
+        // buttons validate setup
+        Button validateButton = (Button) findViewById(R.id.validateButton);
+        validateButton.setTextSize(buttonPoliceSize);
+        validateButton.setWidth(validateWidth);
+        validateButton.setHeight(validateHeight);
 
         // TextView PDF setup
         TextView partitionNameView = (TextView) findViewById(R.id.partitionNameView);
         partitionNameView.setPadding(30, 0, 0, 0);
         if (!pdfChoosen) PDFName = "Partition format PDF";
         partitionNameView.setText(PDFName);
+        partitionNameView.setTextSize(buttonPoliceSize);
 
-        // Set TextView artiste position
-        TextView artisteTV = (TextView) findViewById(R.id.artisteTV);
-        artisteTV.setTextSize(policeSize);
-        artisteTV.getLayoutParams().width = (int) (size.x*0.13);
-
-
-        // Set EditText artiste position
+        // EditText artiste setup
         EditText artisteED = (EditText) findViewById(R.id.artisteED);
-        artisteED.setTextSize(convertToFloat((int)policeSize,0.8));
+        artisteED.setTextSize(policeSize);
+        //artisteED.getLayoutParams().height = EDHeight;
+        //artisteED.getLayoutParams().width = EDHeight;
 
-        // Set artisteLayout artiste position
-        //LinearLayout artisteLayout = (LinearLayout) findViewById(R.id.artisteLayout);
+        // EditText titre setup
+        EditText titreED = (EditText) findViewById(R.id.titreED);
+        titreED.setTextSize(policeSize);
+        //titreED.getLayoutParams().height = titreEDHeight;
+        //titreED.getLayoutParams().width = EDHeight;
+
+        // TextView artiste setup
+        TextView artisteTV = (TextView) findViewById(R.id.artisteTV);
+        artisteTV.setTextSize(buttonPoliceSize);
+        artisteTV.getLayoutParams().height = titreHeight;
 
         // Set TextView Titre position
         TextView titreTV = (TextView) findViewById(R.id.titreTV);
-        titreTV.setTextSize(policeSize);
-        titreTV.getLayoutParams().width = (int) (size.x*0.13);
+        titreTV.setTextSize(buttonPoliceSize);
+        RelativeLayout.LayoutParams titreTVParam = (RelativeLayout.LayoutParams)titreTV.getLayoutParams();
+        //titreTVParam.setMargins(0, EDHeight/3, 0 ,0);
+        //titreTVParam.setMargins(0, titreMargin, 0 ,0);
+        titreTV.getLayoutParams().height = titreHeight;
+        //titreTV.getLayoutParams().width = (int) (size.x*0.13);
 
-        // Set EditText Titre position
-        EditText titreED = (EditText) findViewById(R.id.titreED);
-        titreED.setTextSize(convertToFloat((int)policeSize,0.8));
+        // Set "titre" and "artiste" RelativeLayout size
+        RelativeLayout titreLayout = (RelativeLayout) findViewById(R.id.titreLayout);
+        //titreLayout.getLayoutParams().height = 2 * (EDHeight + EDMargin);
+        //titreLayout.getLayoutParams().height = 600;
+        titreLayout.getLayoutParams().width = titreLayoutWidth;
+    }
 
+    public void goToHome()
+    {
+        Intent intent = new Intent(this, Home.class);
+        startActivity(intent);
     }
 
     public float convertToFloat(int nbA, double percentage)
@@ -161,6 +243,29 @@ public class ChangePartition extends AppCompatActivity {
 
     public void validateButton(View view)
     {
+        PartitionActivity app = (PartitionActivity) getApplicationContext();
+        ArrayList<Partition> list = app.getPartitionList();
+
+        if (list == null)
+        {
+            list = new ArrayList<>();
+        }
+
+        list.add(new Partition("Axel Bauer","eteins la lumiere",0,"Axel Bauer - eteins la lumiere.pdf"));
+        list.add(new Partition("Bob Dylan","Knockin’ on Heavens Door",0,"Bob Dylan – Knockin’ on Heavens Door.pdf"));
+        list.add(new Partition("Eric Clapton","COCAINE",0,"COCAINE - Eric Clapton menu.pdf"));
+        list.add(new Partition("The Rolling Stones","Honky Tonk Woman",0,"Honky Tonk Woman - The Rolling Stones.pdf"));
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        Gson gson = new Gson();
+
+        String json = gson.toJson(list);
+
+        editor.putString("partitionList", json);
+        editor.apply();
+        app.savePartitionList(list);
+
         if(resultFromParcourir != null) {
             File targetedFile = new File(resultFromParcourir);
             try {copy(targetedFile);}

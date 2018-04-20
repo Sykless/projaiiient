@@ -131,12 +131,24 @@ public class ChooseSinglePlaylist extends AppCompatActivity
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
 
-                goToPlay();
+                goToSingleCreate();
+            }
+        };
+
+        View.OnClickListener buttonEffectPlaylist = new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                v.startAnimation(buttonClick);
+                v.startAnimation(buttonClickRelease);
+
+                goToPlaylistCreate();
             }
         };
 
         buttonSingle.setOnClickListener(buttonEffect);
-        buttonAlbum.setOnClickListener(buttonEffect);
+        buttonAlbum.setOnClickListener(buttonEffectPlaylist);
     }
 
     public void goToHome()
@@ -149,6 +161,11 @@ public class ChooseSinglePlaylist extends AppCompatActivity
     {
         Intent intent = new Intent(this,Play.class);
         startActivity(intent);
+    }
+
+    public void goToPlaylistCreate()
+    {
+
     }
 
     @Override

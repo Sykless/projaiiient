@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -73,6 +74,24 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         setContentView(R.layout.parcourir_layout);
         requestForPermission();
 
+        // Toolbar icons setup
+        FrameLayout homeLayout = findViewById(R.id.homeLayout);
+        FrameLayout backLayout = findViewById(R.id.backLayout);
+
+        homeLayout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                goToHome();
+            }
+        });
+        backLayout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+            }
+        });
+
         nodeCounter = 0;
         firstTimeOpened = false;
         currentFileIsEmpty = false;
@@ -80,13 +99,6 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         listViewFiles = (ListView) findViewById(R.id.IDFiles);
         listViewFiles.setOnItemClickListener(this);
         lengthOfDCIMParentDir = fichiers.length;
-
-        // Toolbar setup
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Creating the directory where will be stored the partitions (pdf files)
         if(userDir.mkdirs()) Log.e("OnCreate","Directory created");
@@ -239,6 +251,12 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
             }
         }
         return result;
+    }
+
+    public void goToHome()
+    {
+        Intent intent = new Intent(this, Home.class);
+        startActivity(intent);
     }
 
     //TODO finir de coder cette partie

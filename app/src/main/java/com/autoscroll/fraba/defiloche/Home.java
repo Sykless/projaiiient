@@ -236,7 +236,7 @@ public class Home extends AppCompatActivity
     {
         Intent intent;
         partitionList = app.getPartitionList();
-        intent = new Intent(this,ChangePartition.class);
+        intent = new Intent(this,ChooseSinglePlaylist.class);
         /*
         if (partitionList == null || partitionList.size() == 0)
         {

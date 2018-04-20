@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation = "vertical"
     tools:context="com.autoscroll.fraba.defiloche.ChangePartition">
+
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -12,197 +14,237 @@
         android:layout_height="wrap_content"
         android:background="@color/cyan"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme">
+        android:theme="?attr/actionBarTheme"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/toolbarLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="?selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_alignBottom="@+id/toolbar"
+            android:layout_alignParentStart="true"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
 
-            <ImageView
-                android:id="@+id/home_button"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_home_white_48dp" />
-        </FrameLayout>
+            <FrameLayout
+                android:id="@+id/backLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="?actionBarItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/backButton"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_keyboard_backspace_white_48dp"
+                    tools:layout_editor_absoluteX="16dp"
+                    tools:layout_editor_absoluteY="6dp" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/homeLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="?actionBarItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/home_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_home_white_48dp" />
+            </FrameLayout>
+        </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.Toolbar>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayoutParcourir"
-        android:layout_width="0dp"
-        android:layout_height="35dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/ParcourirButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/buttonborder"
-            android:onClick="goToParcourir"
-            android:text="Parcourir"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/partitionNameView"
-            android:layout_width="117dp"
+        <RelativeLayout
+            android:id="@+id/relativeLayoutParcourir"
+            android:layout_width="0dp"
             android:layout_height="35dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/titreLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread_inside">
+
+            <Button
+                android:id="@+id/ParcourirButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/buttonborder"
+                android:onClick="goToParcourir"
+                android:text="Parcourir"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/partitionNameView"
+                android:layout_width="117dp"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/ParcourirButton"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:text="Partition format PDF"
+                android:textAlignment="viewStart"
+                android:textColor="@android:color/darker_gray"
+                tools:layout_editor_absoluteX="188dp"
+                tools:layout_editor_absoluteY="252dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/titreLayout"
+            android:layout_width="268dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/ParcourirButton"
-            android:background="@drawable/border"
-            android:gravity="center"
-            android:text="Partition format PDF"
-            android:textAlignment="viewStart"
-            android:textColor="@android:color/darker_gray"
-            tools:layout_editor_absoluteX="188dp"
-            tools:layout_editor_absoluteY="252dp" />
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="start"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/paramButton"
+            app:layout_constraintStart_toStartOf="@+id/relativeLayoutParcourir"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayoutParcourir">
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/titreTV"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/artisteTV"
+                android:layout_toStartOf="@+id/titreED"
+                android:gravity="center"
+                android:text="Titre :"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/titreED"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <EditText
+                android:id="@+id/artisteED"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/artisteTV"
+                android:gravity="bottom"
+                android:inputType="textNoSuggestions"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/artisteTV"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/artisteTV"
-        android:layout_width="70dp"
-        android:layout_height="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:gravity="bottom"
-        android:text="Artiste :"
-        android:textAlignment="viewStart"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/titreTV"
-        app:layout_constraintEnd_toStartOf="@+id/artisteLayout"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayoutParcourir"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintVertical_chainStyle="packed" />
-    <!--android:layout_toStartOf="@+id/partitionNameView"-->
-    <!--android:layout_marginTop="250dp"-->
+            <TextView
+                android:id="@+id/artisteTV"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:text="Artiste :"
+                android:textAlignment="viewStart"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:layout_editor_absoluteX="24dp" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/titreLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="8dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/validateButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/titreTV"
-        app:layout_constraintTop_toBottomOf="@+id/artisteLayout"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintVertical_chainStyle="packed">
+            <EditText
+                android:id="@+id/titreED"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/artisteTV"
+                android:layout_toEndOf="@+id/artisteTV"
+                android:ems="10"
+                android:gravity="bottom"
+                android:inputType="textNoSuggestions"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/titreTV" />
 
-        <EditText
-            android:id="@+id/titreED"
+            <!--<EditText
+                android:id="@+id/titreED"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/artisteTV"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="13dp"
+                android:layout_toEndOf="@+id/titreTV"
+                android:ems="10"
+                android:inputType="textNoSuggestions"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/titreTV" />-->
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/paramButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="bottom"
-            android:inputType="textNoSuggestions"
-            android:textSize="16sp">
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/buttonborder"
+            android:onClick="goToParam"
+            android:text="Paramètres d'écoute"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/validateButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titreLayout" />
 
-        </EditText>
+        <Button
+            android:id="@+id/validateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/buttonborder"
+            android:onClick="validateButton"
+            android:text="Valider"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/paramButton" />
+
     </android.support.constraint.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/titreTV"
-        android:layout_width="70dp"
-        android:layout_height="40dp"
-        android:layout_alignStart="@+id/artisteTV"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="24dp"
-        android:gravity="bottom"
-        android:text="Titre :"
-        android:textAlignment="viewStart"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/validateButton"
-        app:layout_constraintEnd_toStartOf="@+id/titreLayout"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/artisteTV"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <LinearLayout
-        android:id="@+id/artisteLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="16dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/titreLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/artisteTV"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayoutParcourir"
-        app:layout_constraintVertical_bias="0.000"
-        app:layout_constraintVertical_chainStyle="packed">
-
-        <EditText
-            android:id="@+id/artisteED"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:ems="10"
-            android:inputType="textNoSuggestions"
-            android:textColor="@android:color/black"
-            android:gravity="bottom"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/validateButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/buttonborder"
-        android:onClick="validateButton"
-        android:text="Valider"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/paramButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="92dp"
-        android:background="@drawable/buttonborder"
-        android:onClick="goToParam"
-        android:text="Paramètres d'écoute"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titreLayout" />
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
