@@ -474,7 +474,14 @@ public class SelectSongPlaylist extends AppCompatActivity
 
             if (menuValue == PARTITION)
             {
-                toDisplay = partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle();
+                if (partitionList.get(i).getArtist().length() > 0 && partitionList.get(i).getTitle().length() > 0)
+                {
+                    toDisplay = partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle();
+                }
+                else
+                {
+                    toDisplay = partitionList.get(i).getFile().getName();
+                }
             }
 
             if (menuValue == PLAYLIST)

@@ -197,7 +197,19 @@ public class AddPartitionToPlaylist extends AppCompatActivity
 
             // Creating a new TextView
             TextView songName = new TextView(this);
-            songName.setText(partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle());
+
+            String toDisplay;
+
+            if (partitionList.get(i).getArtist().length() > 0 && partitionList.get(i).getTitle().length() > 0)
+            {
+                toDisplay = partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle();
+            }
+            else
+            {
+                toDisplay = partitionList.get(i).getFile().getName();
+            }
+
+            songName.setText(toDisplay);
             songName.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             songName.setTextColor(Color.WHITE);
 

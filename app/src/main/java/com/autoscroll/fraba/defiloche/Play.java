@@ -48,6 +48,8 @@ public class Play extends AppCompatActivity {
     FrameLayout homeLayout;
     TextView textTitle;
 
+    Partition partitionToPlay;
+
     Point size;
 
     float endPage = 0;
@@ -122,7 +124,7 @@ public class Play extends AppCompatActivity {
         PartitionActivity app = (PartitionActivity) getApplicationContext();
 
         int songNumber = getIntent().getIntExtra("songNumber", 0);
-        Partition partitionToPlay = app.getPartitionList().get(songNumber);
+        partitionToPlay = app.getPartitionList().get(songNumber);
 
         ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(partitionToPlay.getFile());
 
@@ -215,7 +217,7 @@ public class Play extends AppCompatActivity {
 
                 movePartition = ObjectAnimator.ofInt(sView, "scrollY", sView.getScrollY(), bottomScroll);
                 movePartition.addListener(animatorPause);
-                movePartition.setDuration(Math.round(60000*(1 - (float)sView.getScrollY()/bottomScroll)));
+                movePartition.setDuration(Math.round(partitionToPlay.getSpeed()*1000*(1 - (float)sView.getScrollY()/bottomScroll)));
 
                 animatorSet = new AnimatorSet();
                 animatorSet.play(movePartition);
@@ -283,6 +285,7 @@ public class Play extends AppCompatActivity {
                 }
 
                 textTitle.setTextSize(textSize);
+                textTitle.setText(partitionToPlay.getArtist() + " - " + partitionToPlay.getTitle());
 
                 layoutSetup = true;
             }

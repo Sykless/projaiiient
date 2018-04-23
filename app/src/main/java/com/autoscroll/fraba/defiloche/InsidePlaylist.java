@@ -42,6 +42,7 @@ public class InsidePlaylist extends AppCompatActivity
         FrameLayout backLayout = findViewById(R.id.backLayout);
         FrameLayout deleteLayout = findViewById(R.id.deleteLayout);
         FrameLayout createLayout = findViewById(R.id.createLayout);
+        FrameLayout swapLayout = findViewById(R.id.swapLayout);
 
         homeLayout.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -57,6 +58,16 @@ public class InsidePlaylist extends AppCompatActivity
             }
         });
         deleteLayout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                deleteMemory();
+            }
+        });
+        swapLayout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                deleteMemory();
+            }
+        });
+        createLayout.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 deleteMemory();
             }
@@ -160,7 +171,19 @@ public class InsidePlaylist extends AppCompatActivity
             // Creating a new TextView
             TextView songName = new TextView(this);
             Partition currentPartition = currentPlaylist.getPartitionList().get(i);
-            String toDisplay = String.valueOf(i + 1) + "  " + currentPartition.getArtist() + " - " + currentPartition.getTitle();
+
+            String namePartition;
+
+            if (currentPartition.getArtist().length() > 0 && currentPartition.getTitle().length() > 0)
+            {
+                namePartition = currentPartition.getArtist() + " - " + currentPartition.getTitle();
+            }
+            else
+            {
+                namePartition = currentPartition.getFile().getName();
+            }
+
+            String toDisplay = String.valueOf(i + 1) + "  " + namePartition;
 
             songName.setText(toDisplay);
             songName.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
