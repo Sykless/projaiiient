@@ -77,6 +77,7 @@
     </android.support.v7.widget.Toolbar>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -91,7 +92,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toTopOf="@+id/titreLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread_inside">
@@ -130,12 +131,13 @@
             android:layout_width="268dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_marginBottom="16dp"
             android:layout_marginStart="32dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="start"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/validateButton"
+            app:layout_constraintBottom_toTopOf="@+id/speedTV"
             app:layout_constraintEnd_toStartOf="@+id/paramButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -149,7 +151,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/artisteTV"
                 android:layout_toStartOf="@+id/artisteED"
-                android:gravity="center"
+                android:gravity="bottom"
                 android:text="Titre :"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
@@ -164,7 +166,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:layout_above="@+id/titreTV"
                 android:layout_gravity="bottom"
                 android:layout_toEndOf="@+id/artisteTV"
                 android:inputType="textNoSuggestions"
@@ -174,28 +175,13 @@
                 app:layout_constraintStart_toEndOf="@+id/artisteTV"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- <EditText
-                android:id="@+id/artisteED"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/artisteTV"
-                android:gravity="bottom"
-                android:inputType="textNoSuggestions"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/artisteTV"
-                app:layout_constraintTop_toTopOf="parent" />-->
-
             <TextView
                 android:id="@+id/artisteTV"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:gravity="center"
+                android:gravity="bottom"
                 android:text="Artiste :"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
@@ -240,7 +226,7 @@
             android:id="@+id/validateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:background="@drawable/buttonborder"
@@ -249,9 +235,39 @@
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.473"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/speedTV" />
+
+        <TextView
+            android:id="@+id/speedTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:text="Vitesse de défilement :"
+            android:textColor="@android:color/background_dark"
+            app:layout_constraintBottom_toTopOf="@+id/validateButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titreLayout" />
+
+        <!--<LinearLayout
+            android:id="@+id/personnalRatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/paramButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titreLayout"></LinearLayout>-->
+
     </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>

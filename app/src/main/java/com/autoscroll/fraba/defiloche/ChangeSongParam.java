@@ -150,7 +150,7 @@ public class ChangeSongParam extends AppCompatActivity
 
     public void validateButton(View view)
     {
-        Toast.makeText(getApplicationContext(), "à enregistrer dans le cache", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "à enregistrer (en cours de développement)", Toast.LENGTH_SHORT).show();
         finish();
     }
 }

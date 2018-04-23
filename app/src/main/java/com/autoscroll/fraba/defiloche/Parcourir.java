@@ -11,9 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,11 +20,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,7 +54,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
     final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
     final File DCIMParentDir = DCIMDir.getParentFile();
     //TODO changer le nom du dossier
-    final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/DepuisAndroid");
+    final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/Défileur de partitions");
     File targetedFile;
 
     // fichiers : {"Music", "Download", "DCIM", "Android"} for example
@@ -379,7 +372,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
 
     boolean displayAlertBox(String fileName) {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setMessage("Voulez vous ajouter " + fileName + " à l'application [nom de l'application] ?");
+        builder1.setMessage("Voulez vous ajouter " + '"' + fileName + '"' + " à l'application ?");
         builder1.setCancelable(true);
 
         builder1.setPositiveButton(
@@ -401,7 +394,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                                 if ( targetedFile.getName().equals(userFiles[i].getName()))
                                 {
                                     fileExist = true;
-                                    Toast.makeText(getApplicationContext(), "Ce fichier est déjà dans le dossier [nomDuDossier]", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Ce fichier est déjà dans le dossier [Défileur de partitions]", Toast.LENGTH_SHORT).show();
                                 }
                             }
                             if(!fileExist)
@@ -434,7 +427,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                         }
                         else
                         {
-                            Toast.makeText(getApplicationContext(), "Ce n'est pas un fichier .pdf", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Ce n'est pas un fichier pdf", Toast.LENGTH_SHORT).show();
                         }
                         dialog.cancel();
                     }
