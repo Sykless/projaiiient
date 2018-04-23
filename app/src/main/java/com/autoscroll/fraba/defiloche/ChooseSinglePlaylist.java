@@ -7,7 +7,6 @@ import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -20,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class ChooseSinglePlaylist extends AppCompatActivity
 {
     AnimationDrawable animationSingle;
@@ -29,6 +30,13 @@ public class ChooseSinglePlaylist extends AppCompatActivity
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
 
     String displayMode;
+
+    PartitionActivity app;
+    ArrayList<Partition> partitionList;
+    ArrayList<Playlist> playlistList;
+
+    private static final int PARTITION = 2;
+    private static final int PLAYLIST = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,8 +54,17 @@ public class ChooseSinglePlaylist extends AppCompatActivity
         TextView textAlbum = findViewById(R.id.textAlbum);
 
         // Toolbar setup
-        Toolbar toolbar = findViewById(R.id.toolbar);
         FrameLayout homeLayout = findViewById(R.id.homeLayout);
+        FrameLayout backLayout = findViewById(R.id.backLayout);
+
+        backLayout.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+            }
+        });
         homeLayout.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
@@ -55,9 +72,6 @@ public class ChooseSinglePlaylist extends AppCompatActivity
                 goToHome();
             }
         });
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Layout modification according to orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
@@ -163,9 +177,18 @@ public class ChooseSinglePlaylist extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void goToSingleCreate()
+    {
+        Intent intent = new Intent(this,SelectSongPlaylist.class);
+        intent.putExtra("menuValue", PARTITION);
+        startActivity(intent);
+    }
+
     public void goToPlaylistCreate()
     {
-
+        Intent intent = new Intent(this,SelectSongPlaylist.class);
+        intent.putExtra("menuValue", PLAYLIST);
+        startActivity(intent);
     }
 
     @Override
@@ -175,7 +198,7 @@ public class ChooseSinglePlaylist extends AppCompatActivity
         return true;
     }
 
-    public void setRelativeLayoutButton(Context context, int id)
+    public void setRelativeLayoutButton(Context context, int id) // TODO Move this shit
     {
         RelativeLayout buttonLayout = new RelativeLayout(context);
         RelativeLayout layout = findViewById(id);

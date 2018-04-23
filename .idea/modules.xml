@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Defiloche.iml" filepath="$PROJECT_DIR$/Defiloche.iml" />
       <module fileurl="file://D:\ISEN\2017-2018\projaiiient\gitKraken\projaiiient\Defiloche.iml" filepath="D:\ISEN\2017-2018\projaiiient\gitKraken\projaiiient\Defiloche.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/projaiiient.iml" filepath="$PROJECT_DIR$/projaiiient.iml" />
       <module fileurl="file://D:\Documents\Programmation\Android\Defiloche\projaiiient.iml" filepath="D:\Documents\Programmation\Android\Defiloche\projaiiient.iml" />
     </modules>
   </component>

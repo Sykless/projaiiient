@@ -131,7 +131,8 @@ public class CreatePlaylist extends AppCompatActivity
             PartitionActivity app = (PartitionActivity) getApplicationContext();
             ArrayList<Playlist> list = app.getPlaylistList();
 
-            if (list == null) {
+            if (list == null)
+            {
                 list = new ArrayList<>();
             }
 
@@ -143,12 +144,13 @@ public class CreatePlaylist extends AppCompatActivity
 
             String json = gson.toJson(list);
 
-            editor.putString("partitionList", json);
+            editor.putString("playlistList", json);
             editor.apply();
+
             app.savePlaylistList(list);
 
             Intent intent = new Intent(this, AddPartitionToPlaylist.class);
-            intent.putExtra("playlistName", playlistName);
+            intent.putExtra("playlistNumber",list.size() - 1);
             startActivity(intent);
         }
         else

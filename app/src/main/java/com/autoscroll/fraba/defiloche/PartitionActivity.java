@@ -23,6 +23,7 @@ public class PartitionActivity extends Application
         super.onCreate();
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         Gson gson = new Gson();
 
         String json = sharedPrefs.getString("partitionList", null);
@@ -33,13 +34,14 @@ public class PartitionActivity extends Application
         type = new TypeToken<ArrayList<Playlist>>() {}.getType();
         arrayListPlaylist = gson.fromJson(json, type);
 
+        if (arrayListPartition != null && arrayListPartition.size() > 0)
+        {
+            System.out.println(arrayListPartition.get(0).getArtist());
+        }
+
         if (arrayListPlaylist == null)
         {
-            System.out.println("ArrayList empty lol !");
-        }
-        else
-        {
-            System.out.println(arrayListPlaylist.get(0).getName() + " " + (arrayListPlaylist.get(0).getPartitionList().get(0).getArtist()));
+            System.out.println("ArrayListPlaylist empty lol !");
         }
     }
 

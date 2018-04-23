@@ -272,7 +272,7 @@ public class ChangePartition extends AppCompatActivity {
             catch (IOException e) {Log.e("AlertBox OnItemclick", e.getMessage());}
             Toast.makeText(getApplicationContext(), "copy OK !", Toast.LENGTH_SHORT).show();
         }
-        else Toast.makeText(getApplicationContext(), "Vous n'avez sélectionné aucun fichier", Toast.LENGTH_SHORT).show();
+        // else Toast.makeText(getApplicationContext(), "Vous n'avez sélectionné aucun fichier", Toast.LENGTH_SHORT).show();
     }
 
     //This code comes from StackOverflow : copying a file

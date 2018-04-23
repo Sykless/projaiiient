@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -302,20 +303,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
         ArrayList<Playlist> playlistList = app.getPlaylistList();
         ArrayList<Partition> partitionList = app.getPartitionList();
 
-        String playlistName = getIntent().getStringExtra("playlistName");
-
-        boolean foundIt = false;
-        int playlistNumber = 0;
-
-        for (int i = 0 ; i < playlistList.size() && !foundIt ; i++)
-        {
-            if (playlistList.get(i).getName().equals(playlistName))
-            {
-                playlistNumber = i;
-                foundIt = true;
-            }
-        }
-
+        int playlistNumber = getIntent().getIntExtra("playlistNumber",0);
         Playlist playlistToCreate = playlistList.get(playlistNumber);
 
         for (int i = 0 ; i < playlist.size() ; i++)
@@ -323,8 +311,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
             playlistToCreate.addPartition(partitionList.get(playlist.get(i)));
         }
 
-
-        playlistList.add(playlistToCreate);
+        playlistList.set(playlistNumber,playlistToCreate);
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -335,7 +322,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
         editor.putString("playlistList", json);
         editor.apply();
 
-        Intent intent = new Intent(this, Home.class);
-        startActivity(intent);
+        Toast.makeText(this, "Playlist " + playlistToCreate.getName() + " crée !", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

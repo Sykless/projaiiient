@@ -9,11 +9,9 @@ import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
@@ -22,33 +20,24 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class SelectSong extends AppCompatActivity
+public class InsidePlaylist extends AppCompatActivity
 {
-    private static final int ARTIST = 0;
-    private static final int TITLE = 1;
-
-    View selectedBackground;
-    boolean setup = false;
-    float backgroundSize = 0;
-
-    int displayChoice = TITLE;
-    int origin = 0;
-
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F, 1F); // Unfading animation on button when clicked
 
-    RelativeLayout textTitle;
-    RelativeLayout textArtist;
+    boolean emptyLayout = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_song);
+        setContentView(R.layout.activity_inside_playlist);
 
+        // Toolbar icons setup
         FrameLayout homeLayout = findViewById(R.id.homeLayout);
         FrameLayout backLayout = findViewById(R.id.backLayout);
         FrameLayout deleteLayout = findViewById(R.id.deleteLayout);
@@ -73,74 +62,41 @@ public class SelectSong extends AppCompatActivity
             }
         });
 
-        textTitle = findViewById(R.id.textTitleLayout);
-        textArtist = findViewById(R.id.textArtistLayout);
+        buttonClick.setDuration(100);
+        buttonClickRelease.setDuration(100);
+        buttonClickRelease.setStartOffset(100);
 
-        textArtist.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (!setup)
-                {
-                    backgroundSize = textArtist.getWidth();
+        refreshLayout();
+    }
 
-                    ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) textTitle.getLayoutParams();
-                    layoutParams.width = Math.round(backgroundSize);
-                    textTitle.setLayoutParams(layoutParams);
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
 
-                    setup = true;
-                }
-            }
-        });
-
-
-        textTitle.setOnTouchListener(new View.OnTouchListener()
+        if (emptyLayout)
         {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN && displayChoice == ARTIST)
-                {
-                    textTitle.setBackgroundColor(getResources().getColor(R.color.darkcyan));
-                    textArtist.setBackgroundColor(getResources().getColor(R.color.cyan));
+            refreshLayout();
+        }
+    }
 
-                    displayChoice = TITLE;
-                }
-
-                return false;
-            }
-        });
-
-        textArtist.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                if (event.getAction() == MotionEvent.ACTION_DOWN && displayChoice == TITLE)
-                {
-                    textTitle.setBackgroundColor(getResources().getColor(R.color.cyan));
-                    textArtist.setBackgroundColor(getResources().getColor(R.color.darkcyan));
-
-                    displayChoice = ARTIST;
-                }
-
-                return false;
-            }
-        });
-
+    public void refreshLayout()
+    {
         // Layout modification according to orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size); // size.x = device width - size.y = device height
 
         // Default values
-        int marginTop = 0;
         int marginSide = 0;
         int buttonHeight = 200;
         float textSize = 24;
+        int marginTop = 0;
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) // Portait orientation
         {
             marginTop = size.x / 24;
-            marginSide = size.x / 20;
+            marginSide = size.x / 35;
             buttonHeight = size.x / 12;
             textSize = size.x / 20;
         }
@@ -148,43 +104,52 @@ public class SelectSong extends AppCompatActivity
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) // Landscape orientation
         {
             marginTop = size.x / 45;
-            marginSide = size.x / 35;
+            marginSide = size.x / 45;
             buttonHeight = size.x / 20;
             textSize = size.x / 28;
         }
 
-        buttonClick.setDuration(100);
-        buttonClickRelease.setDuration(100);
-        buttonClickRelease.setStartOffset(100);
-
         View.OnClickListener buttonEffect = new View.OnClickListener()
         {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
+            }
+        };
 
-                goToPlay(v.getId());
+        View.OnLongClickListener buttonSwap = new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                System.out.println("Now !");
+
+                return true;
             }
         };
 
         LinearLayout linearLayout = findViewById(R.id.linearLayout);
 
         PartitionActivity app = (PartitionActivity) getApplicationContext();
-        ArrayList<Partition> partitionList = app.getPartitionList();
+        ArrayList<Playlist> playlistList = app.getPlaylistList();
 
-        for (int i = 0 ; i < partitionList.size() ; i++)
+        int playlistNumber = getIntent().getIntExtra("playlistNumber",0);
+        Playlist currentPlaylist = playlistList.get(playlistNumber);
+
+        for (int i = 0 ; i < currentPlaylist.getPartitionList().size() ; i++)
         {
             // Create a new RelativeLayout
             RelativeLayout newButton = new RelativeLayout(this);
             newButton.setId(i);
 
-            // Defining the RelativeLayout layout parameters.
+            // Defining the RelativeLayout layout parameters
             RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 0);
 
             int marginBottom = 0;
 
-            if (i == partitionList.size() - 1)
+            if (i == currentPlaylist.getPartitionList().size() - 1)
             {
                 marginBottom = marginTop;
             }
@@ -194,10 +159,18 @@ public class SelectSong extends AppCompatActivity
 
             // Creating a new TextView
             TextView songName = new TextView(this);
-            songName.setText(partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle());
+            Partition currentPartition = currentPlaylist.getPartitionList().get(i);
+            String toDisplay = String.valueOf(i + 1) + "  " + currentPartition.getArtist() + " - " + currentPartition.getTitle();
+
+            songName.setText(toDisplay);
             songName.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             songName.setTextColor(Color.WHITE);
-
+            songName.setLines(1);
+            /*
+            songName.setHorizontallyScrolling(true);
+            songName.setMarqueeRepeatLimit(-1);
+            songName.setSelected(true);
+            */
 
             // Defining the layout parameters of the TextView
             RelativeLayout.LayoutParams textParameters = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -215,21 +188,13 @@ public class SelectSong extends AppCompatActivity
             newButton.setFocusable(true);
             newButton.setFocusableInTouchMode(false);
             newButton.setOnClickListener(buttonEffect);
+            newButton.setOnLongClickListener(buttonSwap);
 
             // Add the RelativeLayout to the main LinearLayout
             linearLayout.addView(newButton, i);
         }
-    }
 
-    public void deleteMemory()
-    {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.remove("arrayList");
-        editor.apply();
-
-        PartitionActivity app = (PartitionActivity) getApplicationContext();
-        app.savePartitionList(null);
+        emptyLayout = false;
     }
 
     public void goToHome()
@@ -238,10 +203,23 @@ public class SelectSong extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void goToPlay(int songNumber)
+    public void deleteMemory()
     {
-        Intent intent = new Intent(this, Play.class);
-        intent.putExtra("songNumber", songNumber);
-        startActivity(intent);
+        Toast.makeText(this, "Work in progress...", Toast.LENGTH_SHORT).show();
+
+        /*
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.remove("partitionList");
+        editor.remove("playlistList");
+        editor.apply();
+
+        PartitionActivity app = (PartitionActivity) getApplicationContext();
+        app.savePartitionList(null);
+        app.savePlaylistList(null);
+
+        finish();
+        */
     }
 }
+

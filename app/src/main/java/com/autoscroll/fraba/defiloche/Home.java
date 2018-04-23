@@ -3,13 +3,11 @@ package com.autoscroll.fraba.defiloche;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -25,8 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -217,48 +214,26 @@ public class Home extends AppCompatActivity
 
     public void goToPlay(View view)
     {
-        Intent intent;
-        partitionList = app.getPartitionList();
-
-        if (partitionList == null || partitionList.size() == 0)
-        {
-            intent = new Intent(this,NewCreate.class);
-        }
-        else
-        {
-            intent = new Intent(this,SelectSong.class);
-        }
-
+        Intent intent = new Intent(this,SelectSongPlaylist.class);
+        intent.putExtra("menuValue",2);
         startActivity(intent);
     }
 
     public void goToCreate(View view)
     {
-        Intent intent;
-        partitionList = app.getPartitionList();
-        intent = new Intent(this,ChooseSinglePlaylist.class);
-        /*
-        if (partitionList == null || partitionList.size() == 0)
-        {
-            intent = new Intent(this,NewCreate.class);
-        }
-        else
-        {
-            intent = new Intent(this,SelectSong.class);
-        }
-        */
-
-        intent = new Intent(this,CreatePlaylist.class);
-
-        intent.putExtra("menuValue", 2);
+        Intent intent = new Intent(this,ChooseSinglePlaylist.class);
         startActivity(intent);
     }
 
     public void goToShare(View view)
     {
-        Intent intent = new Intent(this,NewCreate.class);
+        /*
+        Intent intent = new Intent(this,SelectSongPlaylist.class);
         intent.putExtra("menuValue", 3);
         startActivity(intent);
+        */
+
+        Toast.makeText(app, "Work in progress...", Toast.LENGTH_SHORT).show();
     }
 
     public void setRelativeLayoutButton(Context context, int id)

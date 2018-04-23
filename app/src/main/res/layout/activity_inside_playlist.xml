@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.autoscroll.fraba.defiloche.SelectSong">
+    tools:context="com.autoscroll.fraba.defiloche.InsidePlaylist">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -47,57 +47,6 @@
                     android:layout_height="36dp"
                     android:src="@drawable/ic_keyboard_backspace_white_48dp" />
             </FrameLayout>
-
-
-            <RelativeLayout
-                android:id="@+id/textTitleLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_centerHorizontal="true"
-                android:gravity="center_horizontal"
-                android:background="@color/darkcyan"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/backLayout"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/textTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:text="Titre"
-                    android:textColor="@color/white" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/textArtistLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_centerHorizontal="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textTitleLayout"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/textArtist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:text="Artiste"
-                    android:textColor="@color/white" />
-            </RelativeLayout>
 
             <FrameLayout
                 android:id="@+id/homeLayout"
@@ -166,12 +115,35 @@
                     android:layout_height="36dp"
                     android:src="@drawable/ic_delete_white_48dp" />
             </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/swapLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginTop="8dp"
+                android:background="?actionBarItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/deleteLayout"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/swapButton"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_swap_vert_white_48dp" />
+            </FrameLayout>
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.Toolbar>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/scrollView"
         android:fillViewport="true">
 
         <LinearLayout
@@ -179,6 +151,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>
