@@ -398,6 +398,7 @@ public class ChangePartition extends AppCompatActivity {
             } catch (IOException e) {
                 Log.e("AlertBox OnItemclick", e.getMessage());
             }
+            Log.e("Test",""+targetedFile.length());
             Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
             TextView partitionNameView = findViewById(R.id.partitionNameView);
             partitionNameView.setText("Partition format PDF");

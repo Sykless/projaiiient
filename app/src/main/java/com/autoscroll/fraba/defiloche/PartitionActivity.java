@@ -36,12 +36,15 @@ public class PartitionActivity extends Application
 
         if (arrayListPartition != null && arrayListPartition.size() > 0)
         {
-            System.out.println(arrayListPartition.get(0).getArtist());
+            for (Partition partition : arrayListPartition)
+            {
+                System.out.println(partition.getFile().length() + " - " + partition.getFile().getAbsolutePath());
+            }
         }
 
-        if (arrayListPlaylist == null)
+        if (arrayListPartition == null)
         {
-            System.out.println("ArrayListPlaylist empty lol !");
+            System.out.println("arrayListPartition empty lol !");
         }
     }
 

@@ -4,12 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.pdf.PdfRenderer;
-import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -21,8 +19,6 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -71,7 +67,7 @@ public class Play extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_play);
 
         playPauseButton = findViewById(R.id.playPauseButton);
         playPauseLayout = findViewById(R.id.playPauseLayout);
@@ -150,11 +146,6 @@ public class Play extends AppCompatActivity {
         });
     }
 
-    public void Toast(String text)
-    {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
-
     public void goToHome()
     {
         Intent intent = new Intent(this, Home.class);
@@ -195,7 +186,7 @@ public class Play extends AppCompatActivity {
         {
             ex.printStackTrace();
             System.err.println(ex.getMessage());
-            Log.e("Error","Pdf load");
+            Log.e("Error ","Pdf load " + ex.getMessage());
         }
 
         return bitmaps;
@@ -292,7 +283,19 @@ public class Play extends AppCompatActivity {
                 }
 
                 textTitle.setTextSize(textSize);
-                textTitle.setText(partitionToPlay.getArtist() + " - " + partitionToPlay.getTitle());
+
+                String artistTitle;
+
+                if (partitionToPlay.getArtist().length() > 0 && partitionToPlay.getTitle().length() > 0)
+                {
+                    artistTitle = partitionToPlay.getArtist() + " - " + partitionToPlay.getTitle();
+                }
+                else
+                {
+                    artistTitle = partitionToPlay.getFile().getName();
+                }
+
+                textTitle.setText(artistTitle);
 
                 layoutSetup = true;
             }

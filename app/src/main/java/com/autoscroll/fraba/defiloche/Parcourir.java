@@ -402,6 +402,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                             {
                                 //communicate the result to ChangePartition activity
                                 Intent intent = new Intent();
+                                Log.e("Test",""+targetedFile.getPath());
                                 intent.putExtra("RESULT_STRING", targetedFile.getPath());
                                 setResult(RESULT_OK, intent);
                                 finish();

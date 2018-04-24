@@ -156,7 +156,7 @@ public class InsidePlaylist extends AppCompatActivity
             newButton.setId(i);
 
             // Defining the RelativeLayout layout parameters
-            RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 0);
+            LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
 
             int marginBottom = 0;
 

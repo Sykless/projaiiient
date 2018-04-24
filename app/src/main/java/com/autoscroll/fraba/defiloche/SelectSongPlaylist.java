@@ -6,11 +6,11 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.preference.PreferenceManager;
-import android.provider.Telephony;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
@@ -456,7 +456,7 @@ public class SelectSongPlaylist extends AppCompatActivity
             newButton.setId(i);
 
             // Defining the RelativeLayout layout parameters
-            RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 0);
+            LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
 
             int marginBottom = 0;
 
@@ -464,6 +464,8 @@ public class SelectSongPlaylist extends AppCompatActivity
             {
                 marginBottom = marginTop;
             }
+
+            Log.e("Test",""+marginTop) ;
 
             buttonParams.setMargins(marginSide, marginTop, marginSide, marginBottom);
             buttonParams.height = buttonHeight;

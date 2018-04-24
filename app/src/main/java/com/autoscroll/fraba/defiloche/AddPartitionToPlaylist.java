@@ -180,7 +180,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
             // Defining the RelativeLayout layout parameters.
             LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
             LinearLayout.LayoutParams numberParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 0);
-            RelativeLayout.LayoutParams buttonNumberParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 0);
+            LinearLayout.LayoutParams buttonNumberParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
 
             int marginBottom = 0;
 
