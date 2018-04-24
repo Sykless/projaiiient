@@ -17,6 +17,8 @@ public class PartitionActivity extends Application
     ArrayList<Partition> arrayListPartition = new ArrayList<>();
     ArrayList<Playlist> arrayListPlaylist = new ArrayList<>();
 
+    boolean artisteTitreParam = true;
+
     @Override
     public void onCreate()
     {
@@ -75,6 +77,8 @@ public class PartitionActivity extends Application
     {
         arrayListPlaylist = playlistList;
     }
+    boolean getArtisteTitreParam(){return artisteTitreParam;}
+    void setArtisteTitreParam(boolean newValue){artisteTitreParam = newValue;}
 }
 
 // TODO Add the ArrayList writing in Create menu

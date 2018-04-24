@@ -343,15 +343,22 @@ public class ChangePartition extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FROM_CHANGE_PARTITION) {
-            if (resultCode == RESULT_OK) {
-                pdfChoosen = true;
+        if (requestCode == FROM_CHANGE_PARTITION)
+        {
+            if (resultCode == RESULT_OK)
+            {
                 //Use Data to get string
+                pdfChoosen = true;
                 resultFromParcourir = data.getStringExtra("RESULT_STRING");
                 PDFName = resultFromParcourir.substring(resultFromParcourir.lastIndexOf("/") + 1);
                 TextView partitionNameView = (TextView) findViewById(R.id.partitionNameView);
                 partitionNameView.setText(PDFName);
                 partitionNameView.setTextColor(Color.BLACK);
+
+                //fill the artiste and titre fields
+                EditText artisteED = findViewById(R.id.artisteED);
+                EditText titreED = findViewById(R.id.titreED);
+                if(artisteED.length() == 0 && titreED.length() == 0) setArtisteTitre(PDFName);
             }
         }
     }
@@ -391,22 +398,101 @@ public class ChangePartition extends AppCompatActivity {
         editor.apply();
         app.savePartitionList(list);
 
-        if (resultFromParcourir != null) {
+        if (resultFromParcourir != null)
+        {
             File targetedFile = new File(resultFromParcourir);
-            try {
-                copy(targetedFile);
-            } catch (IOException e) {
-                Log.e("AlertBox OnItemclick", e.getMessage());
+            boolean fileInDirectory = false;
+            File [] userFiles = userDir.listFiles();
+
+            //check if the file is in the "défileur de partitions" directory
+            for(int i = 0; i< userFiles.length ; i++)
+            {
+                if (targetedFile.getName().equals(userFiles[i].getName()))
+                {
+                    fileInDirectory = true;
+                    //Toast.makeText(getApplicationContext(), "Ce fichier est déjà dans le dossier [Défileur de partitions]", Toast.LENGTH_SHORT).show();
+                }
             }
-            Log.e("Test",""+targetedFile.length());
-            Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
-            TextView partitionNameView = findViewById(R.id.partitionNameView);
-            partitionNameView.setText("Partition format PDF");
-            artisteED.setText("");
-            titreED.setText("");
-            partitionNameView.setTextColor(Color.parseColor("#808080"));
-        } else
+            if(!fileInDirectory)
+            {
+                try //copy and clear the activity
+                {
+                    copy(targetedFile);
+                    Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
+                    TextView partitionNameView = findViewById(R.id.partitionNameView);
+                    partitionNameView.setText("Partition format PDF");
+                    artisteED.setText("");
+                    titreED.setText("");
+                    partitionNameView.setTextColor(Color.parseColor("#808080"));
+                }
+                catch (IOException e)
+                {
+                    Log.e("AlertBox OnItemclick", e.getMessage());
+                }
+            }
+            else
+            {
+                //clear the activity
+                Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
+                TextView partitionNameView = findViewById(R.id.partitionNameView);
+                partitionNameView.setText("Partition format PDF");
+                artisteED.setText("");
+                titreED.setText("");
+                partitionNameView.setTextColor(Color.parseColor("#808080"));
+            }
+        }
+        else
+        {
             Toast.makeText(getApplicationContext(), "Vous n'avez sélectionné aucun fichier", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void setArtisteTitre(String fileName)
+    {
+        //take the choice from the settings activity
+        PartitionActivity app = (PartitionActivity) getApplicationContext();
+        boolean ArtisteTitreChoice = app.getArtisteTitreParam();
+        String artiste;
+        String titre;
+
+        if(fileName.lastIndexOf("-") == -1)
+        {
+            if(fileName.lastIndexOf("\u00af") != -1)
+            {
+                // "\u00af" => "-" longer
+                artiste = fileName.substring(0,fileName.lastIndexOf("\u00af") - 1);
+                titre = fileName.substring(fileName.lastIndexOf("\u00af") + 1, fileName.lastIndexOf(".") - 1);
+            }
+            else
+            {
+                artiste = "";
+                titre = "";
+            }
+        }
+        else if (fileName.lastIndexOf("-") > 0)
+        {
+            artiste = fileName.substring(0,fileName.lastIndexOf("-") - 1);
+            titre = fileName.substring(fileName.lastIndexOf("-") + 1, fileName.lastIndexOf(".") - 1);
+        }
+        else
+        {
+            artiste = "";
+            titre = "";
+        }
+
+
+        if (!ArtisteTitreChoice)
+        {
+            String buffer = artiste;
+            artiste = titre;
+            titre = buffer;
+        }
+        EditText artisteED = findViewById(R.id.artisteED);
+        artisteED.setText(artiste);
+
+        EditText titreED = findViewById(R.id.titreED);
+        titreED.setText(titre);
     }
 
     //This code comes from StackOverflow : copying a file

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 
 public class Parcourir extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
@@ -98,6 +99,10 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         else Log.e("OnCreate","Directory is not created");
         //StackOverFlow | https://stackoverflow.com/questions/13507789/folder-added-in-android-not-visible-via-usb
         MediaScannerConnection.scanFile(this, new String[] {userDir.toString()}, null, null);
+        //----------------------------------------test-------------------------------------------//
+
+        //----------------------------------------test-------------------------------------------//
+
 
         ArrayListRoot.add("break");
         for (int i = 0; i < fichiers.length; i++)
@@ -283,7 +288,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                     //delete the last element
                     if (breakCounter < 2) ArrayListRoot.remove(ArrayListRoot.size() - 1);
                 }
-                for (String s : ArrayListRoot) Log.e("NavigationUp", "ArrayListRoot " + s);
+                //for (String s : ArrayListRoot) Log.e("NavigationUp", "ArrayListRoot " + s);
 
                 //Refresh ArrayListFile
                 breakCounter = 0;
@@ -304,66 +309,6 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                     }
                     i++;
                 }
-                for (String s : ArrayListFiles) Log.e("NavigationUp", "ArrayListFiles " + s);
-                //adapter.notifyDataSetChanged();//refresh the adapter
-                    /*
-                    for (int i = ArrayListRoot.size() - 1 ; i > 0 ; i--)
-                    {
-                        Log.e("Navigation Up", "ArrayListRoot.size() = "+ ArrayListRoot.size() + " i =  " + i + " j =  " + j + "  (i - j) = " + (i-j));
-                        //if (!removeListRoot) tempLenght --;
-                        //if (removeListRoot)
-                        //{
-                        //}
-                        if (ArrayListRoot.get(i - j).equals("break"))
-                        {
-                            Log.e("Navigation Up", "break ++");
-                            breakCounter ++;
-                            //removeListRoot = false;
-                        }
-                        ArrayListRoot.remove(i);
-                        j++;
-                        if (breakCounter == 2) break;
-                    }
-                    for (String s: ArrayListRoot)
-                    {
-                        Log.e("NavigationUp", "ArrayListRoot " + s);
-                    }
-                    */
-                    /*
-                    prevClickComesListView = false;
-                    firstTimeOpened = false;
-
-                    File [] parent;
-                    if (currentFileIsEmpty) parent = fichiers[0].getParentFile().listFiles();
-                    else parent = fichiers[0].getParentFile().getParentFile().listFiles();
-                    //if(fichiers.length > 0) parent = fichiers[0].getParentFile().getParentFile().listFiles();
-                    ArrayList<String> actualTemp;
-                    ArrayList<String> prevTemp;
-                    actualTemp = sortFilesByName(parent, true);
-                    prevTemp = sortFilesByName(fichiers, true);
-                    //PrevArrayListFiles
-                    FilesIndex.clear();
-                    ArrayListFiles.clear();
-                    PrevArrayListFiles.clear();
-                    //if(actualTemp.size() > 0 ) Log.i("Navigation", "Je remplis la liste !");
-                    for (int i = 0; i < actualTemp.size(); i++)
-                    {
-                        ArrayListFiles.add(actualTemp.get(i));
-                        FilesIndex.add(actualTemp.get(i));
-                        //Log.i("Navigation", "ArrayListFiles " + i + " " + ArrayListFiles.get(i));
-                    }
-
-                    for (int i = 0; i < prevTemp.size(); i++)
-                    {
-                        PrevArrayListFiles.add(prevTemp.get(i));
-                        //FilesIndex.add(prevTemp.get(i));
-                        //Log.e("Navigation", "PrevArrayListFiles " + i + " " + PrevArrayListFiles.get(i));
-                    }
-                    //for (int i = 0; i < parent.length; i++) Log.i("Navigation", "parent " + i + " " + parent[i].getName());
-                    fichiers = parent;
-                    adapter.notifyDataSetChanged();//refresh the adapter
-                    //listViewFiles.invalidateViews();
-                    */
             }
         }
         else onBackPressed();
@@ -398,15 +343,12 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                                     Toast.makeText(getApplicationContext(), "Ce fichier est déjà dans le dossier [Défileur de partitions]", Toast.LENGTH_SHORT).show();
                                 }
                             }*/
-                            if(!fileExist)
-                            {
-                                //communicate the result to ChangePartition activity
-                                Intent intent = new Intent();
-                                Log.e("Test",""+targetedFile.getPath());
-                                intent.putExtra("RESULT_STRING", targetedFile.getPath());
-                                setResult(RESULT_OK, intent);
-                                finish();
-                            }
+                            //communicate the result to ChangePartition activity
+                            Intent intent = new Intent();
+                            intent.putExtra("RESULT_STRING", targetedFile.getPath());
+                            setResult(RESULT_OK, intent);
+                            finish();
+
                         }
                         else if (prevAcvtivityName.equals("CHANGE_SONG_PARAM"))
                         {
@@ -475,8 +417,101 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
     private boolean hasPermission(String perm)
     {
         return (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, perm));
-
     }
+
+    /*public class ExternalStorage {
+
+        public static final String SD_CARD = "sdCard";
+        public static final String EXTERNAL_SD_CARD = "externalSdCard";
+
+
+        //@return True if the external storage is available. False otherwise.
+
+        public static boolean isAvailable() {
+            String state = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                return true;
+            }
+            return false;
+        }
+
+        public static String getSdCardPath() {
+            return Environment.getExternalStorageDirectory().getPath() + "/";
+        }
+
+
+
+        //@return True if the external storage is writable. False otherwise.
+        public static boolean isWritable() {
+            String state = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(state)) {
+                return true;
+            }
+            return false;
+
+        }
+    }*/
 }
 
+// TODO extra code from NavigationUP
 
+//for (String s : ArrayListFiles) Log.e("NavigationUp", "ArrayListFiles " + s);
+//adapter.notifyDataSetChanged();//refresh the adapter
+                    /*
+                    for (int i = ArrayListRoot.size() - 1 ; i > 0 ; i--)
+                    {
+                        Log.e("Navigation Up", "ArrayListRoot.size() = "+ ArrayListRoot.size() + " i =  " + i + " j =  " + j + "  (i - j) = " + (i-j));
+                        //if (!removeListRoot) tempLenght --;
+                        //if (removeListRoot)
+                        //{
+                        //}
+                        if (ArrayListRoot.get(i - j).equals("break"))
+                        {
+                            Log.e("Navigation Up", "break ++");
+                            breakCounter ++;
+                            //removeListRoot = false;
+                        }
+                        ArrayListRoot.remove(i);
+                        j++;
+                        if (breakCounter == 2) break;
+                    }
+                    for (String s: ArrayListRoot)
+                    {
+                        Log.e("NavigationUp", "ArrayListRoot " + s);
+                    }
+                    */
+                    /*
+                    prevClickComesListView = false;
+                    firstTimeOpened = false;
+
+                    File [] parent;
+                    if (currentFileIsEmpty) parent = fichiers[0].getParentFile().listFiles();
+                    else parent = fichiers[0].getParentFile().getParentFile().listFiles();
+                    //if(fichiers.length > 0) parent = fichiers[0].getParentFile().getParentFile().listFiles();
+                    ArrayList<String> actualTemp;
+                    ArrayList<String> prevTemp;
+                    actualTemp = sortFilesByName(parent, true);
+                    prevTemp = sortFilesByName(fichiers, true);
+                    //PrevArrayListFiles
+                    FilesIndex.clear();
+                    ArrayListFiles.clear();
+                    PrevArrayListFiles.clear();
+                    //if(actualTemp.size() > 0 ) Log.i("Navigation", "Je remplis la liste !");
+                    for (int i = 0; i < actualTemp.size(); i++)
+                    {
+                        ArrayListFiles.add(actualTemp.get(i));
+                        FilesIndex.add(actualTemp.get(i));
+                        //Log.i("Navigation", "ArrayListFiles " + i + " " + ArrayListFiles.get(i));
+                    }
+
+                    for (int i = 0; i < prevTemp.size(); i++)
+                    {
+                        PrevArrayListFiles.add(prevTemp.get(i));
+                        //FilesIndex.add(prevTemp.get(i));
+                        //Log.e("Navigation", "PrevArrayListFiles " + i + " " + PrevArrayListFiles.get(i));
+                    }
+                    //for (int i = 0; i < parent.length; i++) Log.i("Navigation", "parent " + i + " " + parent[i].getName());
+                    fichiers = parent;
+                    adapter.notifyDataSetChanged();//refresh the adapter
+                    //listViewFiles.invalidateViews();
+                    */
