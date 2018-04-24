@@ -45,7 +45,6 @@ public class ChangePartition extends AppCompatActivity {
 
     final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
     final File DCIMParentDir = DCIMDir.getParentFile();
-    //TODO changer le nom du dossier ici ET DANS PARCOURIR
     final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/Défileur de partitions");
 
     String PDFName;
@@ -68,7 +67,7 @@ public class ChangePartition extends AppCompatActivity {
     int imageViewHeight;
     int imageViewWidth;
     int PersonalRatingBarHeigth;
-    int speedSelected = 10;
+    int speedSelected = 11;
 
     float policeSize = 16;
     float buttonPoliceSize;
@@ -127,7 +126,7 @@ public class ChangePartition extends AppCompatActivity {
             validateWidth = (int) (size.x * 0.18);
             imageViewHeight = (int) (size.x/22);
             imageViewWidth = (int) (size.x/22);
-            PersonalRatingBarHeigth = (int) ((size.x/22) + 0.05 * size.x);
+            PersonalRatingBarHeigth = (int) ((size.x/21) + 0.05 * size.x);
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) // Landscape orientation
         {
@@ -207,7 +206,12 @@ public class ChangePartition extends AppCompatActivity {
 
         //SpeedTV setup
         TextView speedTV = findViewById(R.id.speedTV);
-        speedTV.setText("Vitesse de défilement : " + speedSelected);
+        // + " = " + (speedSelected - 20)*
+        int secondesTotal = (21 - speedSelected) * 20;
+        int minutes = secondesTotal / 60;
+        int secondes = secondesTotal % 60;
+        speedTV.setText("Vitesse de défilement = " +  minutes + ":" + secondes + " minutes");
+        //speedTV.setText("Vitesse de défilement : " + speedSelected + " - " +  minutes + ":" + secondes + " minutes");
         speedTV.setTextSize(policeSize);
 
         //Add the PersonalRatingBar to the layout and define it's constraints
@@ -270,14 +274,33 @@ public class ChangePartition extends AppCompatActivity {
                     float circleWidth = ratingBarWidth / 21;
                     speedSelected = (int) (x / circleWidth);
                     if (speedSelected > 20 ) speedSelected = 20;
+                    if (speedSelected < 0 ) speedSelected = 0;
                     //color the circles
-                    for (int i = 0; i <= 20; i++)
+                    if (speedSelected == 0)
                     {
-                        if(i <= speedSelected) listImageView.get(i).setColorFilter(Color.parseColor("#00B0F0"));
-                        else listImageView.get(i).setColorFilter(Color.parseColor("#000000"));
+                        for (int i = 0; i <= 20; i++)
+                        {
+                            if(i == 0) listImageView.get(i).setColorFilter(Color.RED);
+                            else listImageView.get(i).setColorFilter(Color.parseColor("#000000"));
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i <= 20; i++)
+                        {
+                            if(i <= speedSelected) listImageView.get(i).setColorFilter(Color.parseColor("#00B0F0"));
+                            else listImageView.get(i).setColorFilter(Color.parseColor("#000000"));
+                        }
                     }
                     TextView speedTV = findViewById(R.id.speedTV);
-                    speedTV.setText("Vitesse de défilement : " + speedSelected);
+                    int secondesTotal = (21 - speedSelected) * 20;
+                    int minutes = secondesTotal / 60;
+                    int secondes = secondesTotal % 60;
+                    if (speedSelected == 0) speedTV.setText("Vitesse de défilement = " + "à l'arrêt");
+                    else if (minutes <= 1) speedTV.setText("Vitesse de défilement = " +  minutes + ":" + secondes + " minute");
+                    else if (minutes == 0) speedTV.setText("Vitesse de défilement = 0:" + secondes + " minutes");
+                    else if (secondes == 0) speedTV.setText("Vitesse de défilement = " +  minutes + ":" + secondes + "0" +" minutes");
+                    else speedTV.setText("Vitesse de défilement = "+  minutes + ":" + secondes + " minutes");
                 }
                 return false;
             }
@@ -351,11 +374,12 @@ public class ChangePartition extends AppCompatActivity {
         if (list == null) {
             list = new ArrayList<>();
         }
-
-        list.add(new Partition("Axel Bauer", "eteins la lumiere", 0, "Axel Bauer - eteins la lumiere.pdf"));
-        list.add(new Partition("Bob Dylan", "Knockin’ on Heavens Door", 0, "Bob Dylan – Knockin’ on Heavens Door.pdf"));
-        list.add(new Partition("Eric Clapton", "COCAINE", 0, "COCAINE - Eric Clapton menu.pdf"));
-        list.add(new Partition("The Rolling Stones", "Honky Tonk Woman", 0, "Honky Tonk Woman - The Rolling Stones.pdf"));
+        //create a partition
+        EditText artisteED = findViewById(R.id.artisteED);
+        EditText titreED = findViewById(R.id.titreED);
+        int secondesTotal = (21 - speedSelected) * 20;
+        if (speedSelected == 0) secondesTotal=0;
+        list.add(new Partition(artisteED.getText().toString(), titreED.getText().toString(), secondesTotal, PDFName));
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -377,6 +401,8 @@ public class ChangePartition extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
             TextView partitionNameView = findViewById(R.id.partitionNameView);
             partitionNameView.setText("Partition format PDF");
+            artisteED.setText("");
+            titreED.setText("");
             partitionNameView.setTextColor(Color.parseColor("#808080"));
         } else
             Toast.makeText(getApplicationContext(), "Vous n'avez sélectionné aucun fichier", Toast.LENGTH_SHORT).show();

@@ -96,7 +96,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread_inside">
-            <!--app:layout_constraintTop_toBottomOf="@+id/toolbar"-->
 
             <Button
                 android:id="@+id/ParcourirButton"
@@ -212,7 +211,6 @@
             android:layout_marginBottom="35dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="89dp"
-            android:layout_toEndOf="@+id/artisteED"
             android:background="@drawable/buttonborder"
             android:onClick="goToParam"
             android:text="Paramètres d'écoute"
@@ -252,21 +250,6 @@
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titreLayout" />
-
-        <!--<LinearLayout
-            android:id="@+id/personnalRatingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/paramButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titreLayout"></LinearLayout>-->
 
     </android.support.constraint.ConstraintLayout>
 

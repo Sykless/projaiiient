@@ -389,6 +389,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                             Log.e("Copying file","displayAlertBox(targetedFile.getName()) return " + resultOfAlertBox);
                             boolean fileExist = false;
                             File [] userFiles = userDir.listFiles();
+                            /*
                             for(int i = 0; i< userFiles.length ; i++)
                             {
                                 if ( targetedFile.getName().equals(userFiles[i].getName()))
@@ -396,7 +397,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                                     fileExist = true;
                                     Toast.makeText(getApplicationContext(), "Ce fichier est déjà dans le dossier [Défileur de partitions]", Toast.LENGTH_SHORT).show();
                                 }
-                            }
+                            }*/
                             if(!fileExist)
                             {
                                 //communicate the result to ChangePartition activity

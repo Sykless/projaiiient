@@ -217,7 +217,14 @@ public class Play extends AppCompatActivity {
 
                 movePartition = ObjectAnimator.ofInt(sView, "scrollY", sView.getScrollY(), bottomScroll);
                 movePartition.addListener(animatorPause);
-                movePartition.setDuration(Math.round(partitionToPlay.getSpeed()*1000*(1 - (float)sView.getScrollY()/bottomScroll)));
+                int speed = 555555556;
+
+                if (partitionToPlay.getSpeed() > 0)
+                {
+                    speed = partitionToPlay.getSpeed();
+                }
+
+                movePartition.setDuration(Math.round(speed*1000*(1 - (float)sView.getScrollY()/bottomScroll)));
 
                 animatorSet = new AnimatorSet();
                 animatorSet.play(movePartition);

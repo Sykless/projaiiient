@@ -65,6 +65,6 @@ public class Partition
     }
     void createFile(String fileName)
     {
-        pdfFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getParentFile().getAbsolutePath() + "/DepuisAndroid/" + fileName);
+        pdfFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getParentFile().getAbsolutePath() + "/Défileur de partitions/" + fileName);
     }
 }
