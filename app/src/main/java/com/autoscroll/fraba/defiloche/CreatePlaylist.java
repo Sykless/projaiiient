@@ -1,5 +1,6 @@
 package com.autoscroll.fraba.defiloche;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -116,6 +117,18 @@ public class CreatePlaylist extends AppCompatActivity
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1)
+        {
+            if(resultCode == Activity.RESULT_OK)
+            {
+                finish();
+            }
+        }
+    }
+
     public void goToHome()
     {
         Intent intent = new Intent(this, Home.class);
@@ -128,34 +141,9 @@ public class CreatePlaylist extends AppCompatActivity
 
         if (playlistName.length() > 0)
         {
-            PartitionActivity app = (PartitionActivity) getApplicationContext();
-            ArrayList<Playlist> list = app.getPlaylistList();
-
-            if (list == null)
-            {
-                list = new ArrayList<>();
-            }
-
-            list.add(new Playlist(playlistName));
-
-            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = sharedPrefs.edit();
-            Gson gson = new Gson();
-
-            String json = gson.toJson(list);
-
-            editor.putString("playlistList", json);
-            editor.apply();
-
-            app.savePlaylistList(list);
-
             Intent intent = new Intent(this, AddPartitionToPlaylist.class);
-            intent.putExtra("playlistNumber",list.size() - 1);
-            startActivity(intent);
-        }
-        else
-        {
-            System.out.println("Nope !");
+            intent.putExtra("playlistName",playlistName);
+            startActivityForResult(intent,1);
         }
     }
 }

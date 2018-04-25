@@ -1,5 +1,6 @@
 package com.autoscroll.fraba.defiloche;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -20,6 +21,7 @@ import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,9 +41,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
     float backgroundSize = 0;
 
     int displayChoice = TITLE;
-    int origin = 0;
     int partitionSize;
-
     int idPartition = 1;
 
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
@@ -49,6 +49,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
 
     RelativeLayout textTitle;
     RelativeLayout textArtist;
+    FrameLayout validateLayout;
 
     ArrayList<Integer> playlist = new ArrayList<>();
     int[] numberPlaylist;
@@ -60,7 +61,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
         setContentView(R.layout.activity_add_partition_to_playlist);
 
         FrameLayout backLayout = findViewById(R.id.backLayout);
-        FrameLayout validateLayout = findViewById(R.id.validateLayout);
+        validateLayout = findViewById(R.id.validateLayout);
 
         backLayout.setOnClickListener(new View.OnClickListener()
         {
@@ -306,6 +307,25 @@ public class AddPartitionToPlaylist extends AppCompatActivity
                 numberLayout.setVisibility(View.VISIBLE);
                 buttonLayout.setBackgroundColor(getResources().getColor(R.color.green));
             }
+
+            boolean oneSelected = false;
+
+            for (int i = 0 ; i < numberPlaylist.length && !oneSelected ; i++)
+            {
+                if (numberPlaylist[i] > 0)
+                {
+                    oneSelected = true;
+                }
+            }
+
+            if (oneSelected)
+            {
+                ((ImageView) validateLayout.getChildAt(0)).setImageResource(R.drawable.ic_done_white_48dp);
+            }
+            else
+            {
+                ((ImageView) validateLayout.getChildAt(0)).setImageResource(R.drawable.ic_done_grey_48dp);
+            }
         }
     };
 
@@ -315,15 +335,20 @@ public class AddPartitionToPlaylist extends AppCompatActivity
         ArrayList<Playlist> playlistList = app.getPlaylistList();
         ArrayList<Partition> partitionList = app.getPartitionList();
 
-        int playlistNumber = getIntent().getIntExtra("playlistNumber",0);
-        Playlist playlistToCreate = playlistList.get(playlistNumber);
-
-        for (int i = 0 ; i < playlist.size() ; i++)
+        if (playlistList == null)
         {
-            playlistToCreate.addPartition(partitionList.get(playlist.get(i)));
+            playlistList = new ArrayList<>();
         }
 
-        playlistList.set(playlistNumber,playlistToCreate);
+        String playlistName = getIntent().getStringExtra("playlistName");
+        Playlist playlistToCreate = new Playlist(playlistName);
+
+        for (Integer i : playlist)
+        {
+            playlistToCreate.addPartition(partitionList.get(i));
+        }
+
+        playlistList.add(playlistToCreate);
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -333,8 +358,12 @@ public class AddPartitionToPlaylist extends AppCompatActivity
 
         editor.putString("playlistList", json);
         editor.apply();
+        app.savePlaylistList(playlistList);
 
-        Toast.makeText(this, "Playlist " + playlistToCreate.getName() + " crée !", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Playlist " + playlistName + " crée !", Toast.LENGTH_SHORT).show();
+
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }
 }

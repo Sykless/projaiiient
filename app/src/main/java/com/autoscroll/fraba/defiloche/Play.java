@@ -33,7 +33,7 @@ import java.util.ArrayList;
 public class Play extends AppCompatActivity {
     ImageView imageView;
     LinearLayout linearLayout;
-    ScrollView sView;
+    ScrollView scrollView;
 
     FrameLayout playPauseLayout;
     FrameLayout replayLayout;
@@ -44,7 +44,13 @@ public class Play extends AppCompatActivity {
     FrameLayout homeLayout;
     TextView textTitle;
 
+    ImageView leftArrow;
+    ImageView rightArrow;
+    ImageView topArrow;
+    ImageView bottomArrow;
+
     Partition partitionToPlay;
+    PartitionActivity app;
 
     Point size;
 
@@ -52,6 +58,7 @@ public class Play extends AppCompatActivity {
     float endScreen = 0;
 
     int numberPdf = 0;
+    int songNumber = 0;
     int actionBarHeight = 0;
     int statusBarHeight = 0;
     int bottomScroll =  0;
@@ -62,6 +69,7 @@ public class Play extends AppCompatActivity {
 
     boolean isRunning = false;
     boolean layoutSetup = false;
+    boolean canScroll = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -77,8 +85,12 @@ public class Play extends AppCompatActivity {
         homeLayout = findViewById(R.id.homeLayout);
         backLayout = findViewById(R.id.backLayout);
         linearLayout = findViewById(R.id.main_view);
-        sView = findViewById(R.id.scroll);
+        scrollView = findViewById(R.id.scroll);
         textTitle = findViewById(R.id.textTitle);
+        leftArrow = findViewById(R.id.leftArrow);
+        rightArrow = findViewById(R.id.rightArrow);
+        topArrow = findViewById(R.id.topArrow);
+        bottomArrow = findViewById(R.id.bottomArrow);
 
         // Toolbar setup
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -112,14 +124,108 @@ public class Play extends AppCompatActivity {
             }
         });
 
+        leftArrow.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                songNumber--;
+                refreshLayout(songNumber);
+
+                return true;
+            }});
+
+        rightArrow.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                songNumber++;
+                refreshLayout(songNumber);
+
+                return true;
+            }});
+
+        leftArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                songNumber--;
+                scrollView.setScrollY(0);
+                refreshLayout(songNumber);
+            }});
+        rightArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                songNumber++;
+                scrollView.setScrollY(0);
+                refreshLayout(songNumber);
+            }});
+        topArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                scrollView.setScrollY(scrollView.getScrollY() - Math.round(endScreen) + actionBarHeight + statusBarHeight);
+            }});
+        bottomArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                scrollView.setScrollY(scrollView.getScrollY() + Math.round(endScreen) - actionBarHeight - statusBarHeight);
+            }});
+
+
         Display display = getWindowManager().getDefaultDisplay();
         size = new Point();
         display.getSize(size);
         endScreen = (float) size.y;
+        scrollView.setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                return isRunning;
+            }
+        });
 
-        PartitionActivity app = (PartitionActivity) getApplicationContext();
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged()
+            {
+                if (scrollView.getChildAt(0).getBottom() <= (scrollView.getHeight() + scrollView.getScrollY()))
+                {
+                    bottomArrow.setVisibility(View.GONE);
+                }
+                else
+                {
+                    bottomArrow.setVisibility(View.VISIBLE);
+                }
 
-        int songNumber = getIntent().getIntExtra("songNumber", 0);
+                if (scrollView.getScrollY() == 0)
+                {
+                    topArrow.setVisibility(View.GONE);
+                }
+                else
+                {
+                    topArrow.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        songNumber = getIntent().getIntExtra("songNumber", 0);
+        refreshLayout(songNumber);
+    }
+
+    public void goToHome()
+    {
+        Intent intent = new Intent(this, Home.class);
+        startActivity(intent);
+    }
+
+    public void refreshLayout(int songNumber)
+    {
+        linearLayout.removeAllViews();
+
+        app = (PartitionActivity) getApplicationContext();
         partitionToPlay = app.getPartitionList().get(songNumber);
 
         ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(partitionToPlay.getFile());
@@ -136,20 +242,36 @@ public class Play extends AppCompatActivity {
 
         bottomScroll = Math.round(numberPdf*endPage - endScreen + actionBarHeight + statusBarHeight);
 
-        sView.setOnTouchListener(new View.OnTouchListener()
+        if (songNumber > 0)
         {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                return isRunning;
-            }
-        });
-    }
+            leftArrow.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            leftArrow.setVisibility(View.GONE);
+        }
 
-    public void goToHome()
-    {
-        Intent intent = new Intent(this, Home.class);
-        startActivity(intent);
+        if (songNumber < app.getPartitionList().size() - 1)
+        {
+            rightArrow.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            rightArrow.setVisibility(View.GONE);
+        }
+
+        if (bottomScroll < 0)
+        {
+            canScroll = false;
+            topArrow.setVisibility(View.GONE);
+            bottomArrow.setVisibility(View.GONE);
+        }
+        else
+        {
+            canScroll = true;
+            topArrow.setVisibility(View.GONE);
+            bottomArrow.setVisibility(View.VISIBLE);
+        }
     }
 
     private ArrayList<Bitmap> pdfToBitmap(File pdfFile) // Convertit un FILE (pdf) en liste de Bitmap
@@ -197,29 +319,32 @@ public class Play extends AppCompatActivity {
         @Override
         public void onClick(View v)
         {
-            if (isRunning)
+            if (canScroll)
             {
-                animatorSet.cancel();
-            }
-            else
-            {
-                isRunning = true;
-                playPauseButton.setImageResource(R.drawable.ic_pause_white_48dp);
-
-                movePartition = ObjectAnimator.ofInt(sView, "scrollY", sView.getScrollY(), bottomScroll);
-                movePartition.addListener(animatorPause);
-                int speed = 555555556;
-
-                if (partitionToPlay.getSpeed() > 0)
+                if (isRunning)
                 {
-                    speed = partitionToPlay.getSpeed();
+                    animatorSet.cancel();
                 }
+                else
+                {
+                    isRunning = true;
+                    playPauseButton.setImageResource(R.drawable.ic_pause_white_48dp);
 
-                movePartition.setDuration(Math.round(speed*1000*(1 - (float)sView.getScrollY()/bottomScroll)));
+                    movePartition = ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getScrollY(), bottomScroll);
+                    movePartition.addListener(animatorPause);
+                    int speed = 555555556;
 
-                animatorSet = new AnimatorSet();
-                animatorSet.play(movePartition);
-                animatorSet.start();
+                    if (partitionToPlay.getSpeed() > 0)
+                    {
+                        speed = partitionToPlay.getSpeed();
+                    }
+
+                    movePartition.setDuration(Math.round(speed*1000*(1 - (float)scrollView.getScrollY()/bottomScroll)));
+
+                    animatorSet = new AnimatorSet();
+                    animatorSet.play(movePartition);
+                    animatorSet.start();
+                }
             }
         }
     };
@@ -229,9 +354,9 @@ public class Play extends AppCompatActivity {
         @Override
         public void onClick(View v)
         {
-            if (sView.getScrollY() != 0 && !isRunning)
+            if (scrollView.getScrollY() != 0 && !isRunning)
             {
-                moveRestart = ObjectAnimator.ofInt(sView, "scrollY", sView.getScrollY(), 0);
+                moveRestart = ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getScrollY(), 0);
                 moveRestart.addListener(animatorPause);
                 moveRestart.setDuration(200);
 
