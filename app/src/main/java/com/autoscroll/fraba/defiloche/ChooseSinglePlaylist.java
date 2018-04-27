@@ -29,14 +29,18 @@ public class ChooseSinglePlaylist extends AppCompatActivity
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
 
-    String displayMode;
-
     PartitionActivity app;
     ArrayList<Partition> partitionList;
     ArrayList<Playlist> playlistList;
 
-    private static final int PARTITION = 2;
-    private static final int PLAYLIST = 3;
+    private static final int PLAY = 1;
+    private static final int CREATE = 2;
+    private static final int SHARE = 3;
+    private static final int PARTITION = 10;
+    private static final int PLAYLIST = 11;
+
+    int selectionHome;
+    int selectionPartitionPlaylist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -137,6 +141,8 @@ public class ChooseSinglePlaylist extends AppCompatActivity
         buttonClickRelease.setDuration(100);
         buttonClickRelease.setStartOffset(100);
 
+        selectionHome = getIntent().getIntExtra("selectionHome",PLAY);
+
         View.OnClickListener buttonEffect = new View.OnClickListener()
         {
             @Override
@@ -145,7 +151,8 @@ public class ChooseSinglePlaylist extends AppCompatActivity
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
 
-                goToSingleCreate();
+                selectionPartitionPlaylist = PARTITION;
+                goToSelect();
             }
         };
 
@@ -157,7 +164,8 @@ public class ChooseSinglePlaylist extends AppCompatActivity
                 v.startAnimation(buttonClick);
                 v.startAnimation(buttonClickRelease);
 
-                goToPlaylistCreate();
+                selectionPartitionPlaylist = PLAYLIST;
+                goToSelect();
             }
         };
 
@@ -171,23 +179,11 @@ public class ChooseSinglePlaylist extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void goToPlay()
-    {
-        Intent intent = new Intent(this,Play.class);
-        startActivity(intent);
-    }
-
-    public void goToSingleCreate()
+    public void goToSelect()
     {
         Intent intent = new Intent(this,SelectSongPlaylist.class);
-        intent.putExtra("menuValue", PARTITION);
-        startActivity(intent);
-    }
-
-    public void goToPlaylistCreate()
-    {
-        Intent intent = new Intent(this,SelectSongPlaylist.class);
-        intent.putExtra("menuValue", PLAYLIST);
+        intent.putExtra("selectionHome",selectionHome); // PLAY or CREATE
+        intent.putExtra("selectionPartitionPlaylist", selectionPartitionPlaylist); // PARTITION or PLAYLIST
         startActivity(intent);
     }
 

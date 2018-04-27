@@ -34,10 +34,14 @@ public class SelectSongPlaylist extends AppCompatActivity
 
     private static final int ARTIST = 0;
     private static final int TITLE = 1;
-    private static final int PARTITION = 2;
-    private static final int PLAYLIST = 3;
     private static final int ANDROIDGUY = 4;
     private static final int LISTLAYOUT = 5;
+
+    private static final int PLAY = 1;
+    private static final int CREATE = 2;
+    private static final int SHARE = 3;
+    private static final int PARTITION = 10;
+    private static final int PLAYLIST = 11;
 
     int displayChoice = TITLE;
     int arraySize = 0;
@@ -51,7 +55,8 @@ public class SelectSongPlaylist extends AppCompatActivity
     float backgroundSize = 0;
     float textSize = 24;
     int marginTop = 0;
-    int menuValue;
+    int selectionPartitionPlaylist;
+    int selectionHome;
 
     PartitionActivity app;
     ArrayList<Playlist> playlistList;
@@ -128,7 +133,14 @@ public class SelectSongPlaylist extends AppCompatActivity
         app = (PartitionActivity) getApplicationContext();
         playlistList = app.getPlaylistList();
         partitionList = app.getPartitionList();
-        menuValue = getIntent().getIntExtra("menuValue", PARTITION);
+        selectionPartitionPlaylist = getIntent().getIntExtra("selectionPartitionPlaylist", PARTITION);
+        selectionHome = getIntent().getIntExtra("selectionHome",PLAY);
+
+        if (selectionHome == PLAY)
+        {
+            createLayout.setVisibility(View.GONE);
+            deleteLayout.setVisibility(View.GONE);
+        }
 
         if (partitionList != null)
         {
@@ -143,10 +155,10 @@ public class SelectSongPlaylist extends AppCompatActivity
 
         if (noPartition)
         {
-            menuValue = PARTITION;
+            selectionPartitionPlaylist = PARTITION;
         }
 
-        if (menuValue == PLAYLIST)
+        if (selectionPartitionPlaylist == PLAYLIST)
         {
             noPartition = playlistList == null || playlistList.size() == 0;
         }
@@ -186,12 +198,12 @@ public class SelectSongPlaylist extends AppCompatActivity
 
         boolean displayLayout = false;
 
-        if (menuValue == PARTITION)
+        if (selectionPartitionPlaylist == PARTITION)
         {
             displayLayout = partitionList != null && partitionList.size() > 0;
         }
 
-        if (menuValue == PLAYLIST)
+        if (selectionPartitionPlaylist == PLAYLIST)
         {
             displayLayout = playlistList != null && playlistList.size() > 0;
         }
@@ -210,8 +222,12 @@ public class SelectSongPlaylist extends AppCompatActivity
     {
         textTitle.setVisibility(View.VISIBLE);
         textArtist.setVisibility(View.VISIBLE);
-        deleteLayout.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.VISIBLE);
+
+        if (selectionHome != PLAY)
+        {
+            deleteLayout.setVisibility(View.VISIBLE);
+        }
 
         mainLayout.setVisibility(View.GONE);
 
@@ -424,14 +440,21 @@ public class SelectSongPlaylist extends AppCompatActivity
                 }
                 else
                 {
-                    if (menuValue == PARTITION)
+                    if (selectionHome == PLAY)
                     {
                         goToPlay(v.getId());
                     }
-
-                    if (menuValue == PLAYLIST)
+                    else
                     {
-                        goToSelect(v.getId());
+                        if (selectionPartitionPlaylist == PARTITION)
+                        {
+                            goToChange(v.getId());
+                        }
+
+                        if (selectionPartitionPlaylist == PLAYLIST)
+                        {
+                            goToSelect(v.getId());
+                        }
                     }
                 }
             }
@@ -439,12 +462,12 @@ public class SelectSongPlaylist extends AppCompatActivity
 
         arraySize = 0;
 
-        if (menuValue == PARTITION)
+        if (selectionPartitionPlaylist == PARTITION)
         {
             arraySize = partitionList.size();
         }
 
-        if (menuValue == PLAYLIST)
+        if (selectionPartitionPlaylist == PLAYLIST)
         {
             arraySize = playlistList.size();
         }
@@ -474,7 +497,7 @@ public class SelectSongPlaylist extends AppCompatActivity
             TextView songName = new TextView(this);
             String toDisplay = "None";
 
-            if (menuValue == PARTITION)
+            if (selectionPartitionPlaylist == PARTITION)
             {
                 if (partitionList.get(i).getArtist().length() > 0 && partitionList.get(i).getTitle().length() > 0)
                 {
@@ -486,7 +509,7 @@ public class SelectSongPlaylist extends AppCompatActivity
                 }
             }
 
-            if (menuValue == PLAYLIST)
+            if (selectionPartitionPlaylist == PLAYLIST)
             {
                 toDisplay = playlistList.get(i).getName();
             }
@@ -572,7 +595,7 @@ public class SelectSongPlaylist extends AppCompatActivity
         TextView Ohoh = findViewById(R.id.Ohoh);
         TextView trouvay = findViewById(R.id.trouvay);
 
-        if (menuValue == PLAYLIST) // If I create a playlist, I change the text
+        if (selectionPartitionPlaylist == PLAYLIST) // If I create a playlist, I change the text
         {
             trouvay.setText("n'avez aucune playlist...");
             textCreate.setText("Créer votre première playlist");
@@ -608,13 +631,13 @@ public class SelectSongPlaylist extends AppCompatActivity
         layoutEmpty = true;
         androidGuyEmpty = true;
 
-        if (menuValue == PARTITION)
+        if (selectionPartitionPlaylist == PARTITION)
         {
             Intent intent = new Intent(this, ChangePartition.class);
             startActivity(intent);
         }
 
-        if (menuValue == PLAYLIST)
+        if (selectionPartitionPlaylist == PLAYLIST)
         {
             Intent intent = new Intent(this, CreatePlaylist.class);
             startActivity(intent);
@@ -636,6 +659,7 @@ public class SelectSongPlaylist extends AppCompatActivity
         androidGuyEmpty = true;
 
         Intent intent = new Intent(this, Play.class);
+        intent.putExtra("selectionPartitionPlaylist",selectionPartitionPlaylist);
         intent.putExtra("songNumber", songNumber);
         startActivity(intent);
     }
@@ -650,6 +674,16 @@ public class SelectSongPlaylist extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void goToChange(int id)
+    {
+        layoutEmpty = true;
+        androidGuyEmpty = true;
+
+        Intent intent = new Intent(this, ChangePartition.class);
+        intent.putExtra("songNumber", id);
+        startActivity(intent);
+    }
+
     View.OnClickListener validateDelete = new View.OnClickListener()
     {
         @Override
@@ -661,7 +695,7 @@ public class SelectSongPlaylist extends AppCompatActivity
 
             PartitionActivity app = (PartitionActivity) getApplicationContext();
 
-            if (menuValue == PARTITION)
+            if (selectionPartitionPlaylist == PARTITION)
             {
                 ArrayList<Partition> newPartitionList = new ArrayList<>();
 
@@ -680,7 +714,7 @@ public class SelectSongPlaylist extends AppCompatActivity
                 app.savePartitionList(newPartitionList);
             }
 
-            if (menuValue == PLAYLIST)
+            if (selectionPartitionPlaylist == PLAYLIST)
             {
                 ArrayList<Playlist> newPlaylistList = new ArrayList<>();
 

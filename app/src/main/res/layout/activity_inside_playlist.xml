@@ -29,11 +29,8 @@
             <FrameLayout
                 android:id="@+id/backLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
@@ -45,18 +42,19 @@
                     android:id="@+id/backButton"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_keyboard_backspace_white_48dp" />
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_keyboard_backspace_white_48dp"
+                    tools:layout_editor_absoluteX="16dp"
+                    tools:layout_editor_absoluteY="6dp" />
             </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/homeLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
@@ -69,17 +67,18 @@
                     android:id="@+id/home_button"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_home_white_48dp"/>
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_home_white_48dp" />
             </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/createLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="end"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginEnd="12dp"
                 android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
@@ -91,17 +90,17 @@
                     android:id="@+id/createButton"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_add_circle_white_48dp" />
             </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/deleteLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="end"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
                 android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
@@ -113,17 +112,17 @@
                     android:id="@+id/deleteButton"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_delete_white_48dp" />
             </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/swapLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="end"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="6dp"
-                android:layout_marginTop="8dp"
                 android:background="?actionBarItemBackground"
                 android:clickable="true"
                 android:focusable="true"
@@ -135,6 +134,8 @@
                     android:id="@+id/swapButton"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginStart="6dp"
                     android:src="@drawable/ic_swap_vert_white_48dp" />
             </FrameLayout>
         </android.support.constraint.ConstraintLayout>

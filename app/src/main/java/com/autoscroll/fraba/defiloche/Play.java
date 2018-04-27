@@ -4,8 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.pdf.PdfRenderer;
 import android.os.ParcelFileDescriptor;
@@ -19,6 +25,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +37,11 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 
-public class Play extends AppCompatActivity {
+public class Play extends AppCompatActivity
+{
+    private static final int PARTITION = 10;
+    private static final int PLAYLIST = 11;
+
     ImageView imageView;
     LinearLayout linearLayout;
     ScrollView scrollView;
@@ -43,6 +54,7 @@ public class Play extends AppCompatActivity {
     FrameLayout backLayout;
     FrameLayout homeLayout;
     TextView textTitle;
+    TextView idSong;
 
     ImageView leftArrow;
     ImageView rightArrow;
@@ -57,11 +69,16 @@ public class Play extends AppCompatActivity {
     float endPage = 0;
     float endScreen = 0;
 
+    int cropLeft = 0;
+    int cropRight = 0;
     int numberPdf = 0;
     int songNumber = 0;
+    int playlistNumber;
+    int arraySize = 0;
     int actionBarHeight = 0;
     int statusBarHeight = 0;
     int bottomScroll =  0;
+    int selectionPartitionPlaylist;
 
     ObjectAnimator movePartition;
     ObjectAnimator moveRestart;
@@ -91,6 +108,7 @@ public class Play extends AppCompatActivity {
         rightArrow = findViewById(R.id.rightArrow);
         topArrow = findViewById(R.id.topArrow);
         bottomArrow = findViewById(R.id.bottomArrow);
+        idSong = findViewById(R.id.idSong);
 
         // Toolbar setup
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -129,6 +147,8 @@ public class Play extends AppCompatActivity {
             public boolean onLongClick(View v)
             {
                 songNumber--;
+                cropLeft = 0;
+                cropRight = 0;
                 refreshLayout(songNumber);
 
                 return true;
@@ -139,6 +159,8 @@ public class Play extends AppCompatActivity {
             public boolean onLongClick(View v)
             {
                 songNumber++;
+                cropLeft = 0;
+                cropRight = 0;
                 refreshLayout(songNumber);
 
                 return true;
@@ -149,6 +171,8 @@ public class Play extends AppCompatActivity {
             public void onClick(View v)
             {
                 songNumber--;
+                cropLeft = 0;
+                cropRight = 0;
                 scrollView.setScrollY(0);
                 refreshLayout(songNumber);
             }});
@@ -157,6 +181,8 @@ public class Play extends AppCompatActivity {
             public void onClick(View v)
             {
                 songNumber++;
+                cropLeft = 0;
+                cropRight = 0;
                 scrollView.setScrollY(0);
                 refreshLayout(songNumber);
             }});
@@ -212,6 +238,19 @@ public class Play extends AppCompatActivity {
         });
 
         songNumber = getIntent().getIntExtra("songNumber", 0);
+        selectionPartitionPlaylist = getIntent().getIntExtra("selectionPartitionPlaylist",PARTITION);
+
+        if (selectionPartitionPlaylist == PLAYLIST)
+        {
+            playlistNumber = songNumber;
+            songNumber = 0;
+        }
+
+        if (selectionPartitionPlaylist == PARTITION)
+        {
+            idSong.setVisibility(View.GONE);
+        }
+
         refreshLayout(songNumber);
     }
 
@@ -224,9 +263,19 @@ public class Play extends AppCompatActivity {
     public void refreshLayout(int songNumber)
     {
         linearLayout.removeAllViews();
-
         app = (PartitionActivity) getApplicationContext();
-        partitionToPlay = app.getPartitionList().get(songNumber);
+
+        if (selectionPartitionPlaylist == PARTITION)
+        {
+            partitionToPlay = app.getPartitionList().get(songNumber);
+            arraySize =  app.getPartitionList().size();
+        }
+
+        if (selectionPartitionPlaylist == PLAYLIST)
+        {
+            partitionToPlay = app.getPlaylistList().get(playlistNumber).getPartitionList().get(songNumber);
+            arraySize = app.getPlaylistList().get(playlistNumber).getPartitionList().size();
+        }
 
         ArrayList<Bitmap> pdfBitmaps = pdfToBitmap(partitionToPlay.getFile());
 
@@ -240,6 +289,24 @@ public class Play extends AppCompatActivity {
             linearLayout.addView(imageView); // Put the imageView in the LinearLayout
         }
 
+        String artistTitle;
+
+        if (selectionPartitionPlaylist == PLAYLIST)
+        {
+            idSong.setText(String.valueOf(songNumber + 1) + "/" + arraySize);
+        }
+
+        if (partitionToPlay.getArtist().length() > 0 && partitionToPlay.getTitle().length() > 0)
+        {
+            artistTitle = partitionToPlay.getArtist() + " - " + partitionToPlay.getTitle();
+        }
+        else
+        {
+            artistTitle = partitionToPlay.getFile().getName();
+        }
+
+        textTitle.setText(artistTitle);
+
         bottomScroll = Math.round(numberPdf*endPage - endScreen + actionBarHeight + statusBarHeight);
 
         if (songNumber > 0)
@@ -251,7 +318,7 @@ public class Play extends AppCompatActivity {
             leftArrow.setVisibility(View.GONE);
         }
 
-        if (songNumber < app.getPartitionList().size() - 1)
+        if (songNumber < arraySize - 1)
         {
             rightArrow.setVisibility(View.VISIBLE);
         }
@@ -284,6 +351,9 @@ public class Play extends AppCompatActivity {
 
             Bitmap bitmap;
             numberPdf = renderer.getPageCount();
+            float coeff = 0;
+            float pageHeigth = 0;
+            int cropCoeff = 1;
 
             for (int i = 0; i < numberPdf; i++)
             {
@@ -291,13 +361,17 @@ public class Play extends AppCompatActivity {
 
                 if (i == 0)
                 {
-                    endPage = size.x*page.getHeight()/page.getWidth();
+                    pageHeigth = size.x*page.getHeight()/(page.getWidth());
+                    coeff = (page.getHeight())/((float) page.getWidth());
+                    endPage = pageHeigth + Math.round(cropCoeff*(cropLeft + cropRight)*coeff);
                 }
 
-                bitmap = Bitmap.createBitmap(size.x, Math.round(endPage), Bitmap.Config.ARGB_8888);
+                bitmap = Bitmap.createBitmap(size.x, Math.round(pageHeigth), Bitmap.Config.ARGB_8888);
                 page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+                Bitmap cropBitmap = Bitmap.createBitmap(bitmap, cropLeft, 0, bitmap.getWidth() - cropCoeff*(cropLeft + cropRight), bitmap.getHeight());
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(cropBitmap, bitmap.getWidth(), Math.round(endPage), true);
 
-                bitmaps.add(bitmap);
+                bitmaps.add(scaledBitmap);
 
                 page.close();
             }
@@ -332,6 +406,7 @@ public class Play extends AppCompatActivity {
 
                     movePartition = ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getScrollY(), bottomScroll);
                     movePartition.addListener(animatorPause);
+                    movePartition.setInterpolator(new LinearInterpolator());
                     int speed = 555555556;
 
                     if (partitionToPlay.getSpeed() > 0)
@@ -396,6 +471,12 @@ public class Play extends AppCompatActivity {
                 textTitle.setWidth(startHomeLayout - startTextLayout - 4);
 
                 float textSize = size.x/80;
+                float idSize = textSize;
+
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) // Portait orientation
+                {
+                    idSize = (float)(textSize*1.5);
+                }
 
                 if (textSize < 10)
                 {
@@ -408,6 +489,7 @@ public class Play extends AppCompatActivity {
                 }
 
                 textTitle.setTextSize(textSize);
+                idSong.setTextSize(idSize);
 
                 String artistTitle;
 

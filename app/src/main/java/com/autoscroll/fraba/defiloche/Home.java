@@ -32,6 +32,10 @@ public class Home extends AppCompatActivity
     public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
     public final int EXTERNAL_REQUEST = 138;
 
+    private static final int PLAY = 1;
+    private static final int CREATE = 2;
+    private static final int SHARE = 3;
+
     AnimationDrawable animationPlay;
     AnimationDrawable animationCreate;
     AnimationDrawable animationShare;
@@ -214,14 +218,15 @@ public class Home extends AppCompatActivity
 
     public void goToPlay(View view)
     {
-        Intent intent = new Intent(this,SelectSongPlaylist.class);
-        intent.putExtra("menuValue",2);
+        Intent intent = new Intent(this,ChooseSinglePlaylist.class);
+        intent.putExtra("selectionHome",PLAY);
         startActivity(intent);
     }
 
     public void goToCreate(View view)
     {
         Intent intent = new Intent(this,ChooseSinglePlaylist.class);
+        intent.putExtra("selectionHome",CREATE);
         startActivity(intent);
     }
 
@@ -229,7 +234,7 @@ public class Home extends AppCompatActivity
     {
         /*
         Intent intent = new Intent(this,SelectSongPlaylist.class);
-        intent.putExtra("menuValue", 3);
+        intent.putExtra("selectionHome", SHARE);
         startActivity(intent);
         */
 
