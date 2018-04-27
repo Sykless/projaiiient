@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -97,6 +98,43 @@ public class ChangePartition extends AppCompatActivity {
             }
         });
 
+        //---------------------------------------test---------------------------------------------//
+
+        final File[] appsDir= ContextCompat.getExternalFilesDirs(this,null);
+        final ArrayList<File> extRootPaths=new ArrayList<>();
+        for(final File file : appsDir) {
+            extRootPaths.add(file.getParentFile().getParentFile().getParentFile().getParentFile());
+        }
+
+        /*
+        for(final File file : extRootPaths)
+            System.out.println(file.getPath());
+            */
+
+        File [] externalFichiers = extRootPaths.get(1).listFiles();
+        /*
+        for(final  File file : externalFichiers)
+            System.out.println("external dir = " + file.getName());
+            */
+        /*
+        File testExt = new File(extRootPaths.get(1).getPath(), "testExt.txt");
+        System.out.println("testExt.getPath() = " + testExt.getPath());
+        System.out.println("testExt.mkdir() = " + testExt.mkdirs());
+
+        File [] externalFichiers = extRootPaths.get(1).listFiles();
+        for(final  File file : externalFichiers)
+            System.out.println("external dir = " + file.getName());
+
+        try //copy and clear the activity
+        {
+            copy(externalFichiers[2]);
+        }
+        catch (IOException e)
+        {
+            Log.e("AlertBox OnItemclick", e.getMessage());
+        }
+        */
+        //---------------------------------------test---------------------------------------------//
 
         //create a personnal Layout wich extends LinearLayout
         MyPersonalRatingBar = new MyLinearLayout(this);
@@ -461,8 +499,8 @@ public class ChangePartition extends AppCompatActivity {
             if(fileName.lastIndexOf("\u00af") != -1)
             {
                 // "\u00af" => "-" longer
-                artiste = fileName.substring(0,fileName.lastIndexOf("\u00af") - 1);
-                titre = fileName.substring(fileName.lastIndexOf("\u00af") + 1, fileName.lastIndexOf(".") - 1);
+                artiste = fileName.substring(0,fileName.lastIndexOf("\u00af"));
+                titre = fileName.substring(fileName.lastIndexOf("\u00af") + 1, fileName.lastIndexOf("."));
             }
             else
             {
@@ -472,8 +510,8 @@ public class ChangePartition extends AppCompatActivity {
         }
         else if (fileName.lastIndexOf("-") > 0)
         {
-            artiste = fileName.substring(0,fileName.lastIndexOf("-") - 1);
-            titre = fileName.substring(fileName.lastIndexOf("-") + 1, fileName.lastIndexOf(".") - 1);
+            artiste = fileName.substring(0,fileName.lastIndexOf("-"));
+            titre = fileName.substring(fileName.lastIndexOf("-") + 1, fileName.lastIndexOf("."));
         }
         else
         {
@@ -497,6 +535,7 @@ public class ChangePartition extends AppCompatActivity {
 
     //This code comes from StackOverflow : copying a file
     public void copy(File src) throws IOException {
+        // TODO PRENDRE EN COMPTE LA COPIE DEPUIS UNE CARTE SD
         File dst = new File(userDir.getPath() + "/" + PDFName);
         dst.createNewFile();
 
