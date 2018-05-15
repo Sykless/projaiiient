@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.os.Environment;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Map;
 
 public class Parcourir extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
@@ -37,27 +37,28 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
     //TODO rendre le code propre (en block)
     int lengthOfDCIMParentDir;
     int nodeCounter;
-    boolean backArrow = false;
     boolean resultOfAlertBox;
     boolean firstTimeOpened;
     boolean prevClickComesListView = true;
-    boolean currentFileIsEmpty;
     boolean firstDirectory = true;
     boolean DirNameHasChanged = false;
     boolean comesFromBackArrow = false;
+    boolean fromExternalMemory = false;
+    boolean lockIt = false;
+
 
 
     ListView listViewFiles;
 
+    ArrayList<Integer> fileColor = new ArrayList<Integer>();;
+    ArrayList<Integer> fileIcon = new ArrayList<Integer>();;
+    ArrayList<String> fileName;
     ArrayAdapter<String> adapter;
-
-    ArrayList<String> PrevArrayListFiles = new ArrayList<>();
     ArrayList<String> ArrayListRoot = new ArrayList<>();
     ArrayList<String> ArrayListFiles = new ArrayList<>();
     ArrayList<String> FilesIndex = new ArrayList<>();
 
     final ArrayList<File> extRootPaths = new ArrayList<>();
-    final ArrayList<File> ArrayListRootFile = new ArrayList<>();
 
     final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
     final File DCIMParentDir = DCIMDir.getParentFile();
@@ -95,7 +96,6 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         //initialisation of the parameters
         nodeCounter = 0;
         firstTimeOpened = false;
-        currentFileIsEmpty = false;
         listViewFiles = findViewById(R.id.IDFiles);
         listViewFiles.setOnItemClickListener(this);
 
@@ -111,20 +111,31 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         //------ list all the memories available (SD cards + intern memory) in extRootPaths-------//
         //The reason for the multiple ".getParentFile()" is to go up another folder, since the original path is .../**Android**/data/YOUR_APP_PACKAGE_NAME/files/
         for(final File file : externalSDFiles) extRootPaths.add(file.getParentFile().getParentFile().getParentFile().getParentFile());
+        onCreateInit();
+    }
 
+    public void onCreateInit()
+    {
+        fromExternalMemory = false;
+        lockIt = false;
 
         //fill the lists of files from INTERNAL_STORAGE
         fichiers = DCIMParentDir.listFiles();
         lengthOfDCIMParentDir = fichiers.length;
 
         //--------------------Add the first directories in the "parcourir root"-------------------//
-        ArrayListRoot.add("break"); //nedeed to come back in the previous directory
-        //ArrayListRootFile.add(null);
+        ArrayListRoot.clear();
+        FilesIndex.clear();
+        ArrayListFiles.clear();
 
-        FilesIndex.add("Mémoire externe");
-        ArrayListFiles.add("Mémoire externe");
-        ArrayListRoot.add("Mémoire externe");
-        //ArrayListRootFile.add();
+        ArrayListRoot.add("break"); //nedeed to come back in the previous directory
+
+        if(extRootPaths.size() > 1)
+        {
+            FilesIndex.add("Mémoire externe");
+            ArrayListFiles.add("Mémoire externe");
+            ArrayListRoot.add("Mémoire externe");
+        }
 
         FilesIndex.add("Mémoire interne");
         ArrayListFiles.add("Mémoire interne");
@@ -133,26 +144,31 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         ArrayListRoot.add("break"); //nedeed to come back in the previous directory
 
         //Refresh the ListView
-        adapter = new ArrayAdapter<String>(Parcourir.this, android.R.layout.simple_expandable_list_item_1, ArrayListFiles);
+        fileIcon.add(R.mipmap.file_arrow);
+        fileIcon.add(R.mipmap.file_arrow);
+        fileColor.add(getResources().getColor(R.color.cyan));//define the color of the two main directories
+        fileColor.add(getResources().getColor(R.color.cyan));
+        fileName = ArrayListFiles;
+        adapter = new FileAdapter(this, fileName, fileIcon, fileColor);
         listViewFiles.setAdapter(adapter);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
+        nodeCounter++;
+
         String dirName;
         ArrayList<String> NewArrayListFiles;
         ArrayList<String> temp;
         File [] newFichiers;
-
-        boolean fromExternalMemory = false;
         dirName = ArrayListFiles.get(position);
         NewArrayListFiles = fillListWithFiles(fichiers);
 
         //add the SD external card directory
         if (firstDirectory)
         {
-            NewArrayListFiles.add("Mémoire externe");
+            if(extRootPaths.size() > 1) NewArrayListFiles.add("Mémoire externe");
             NewArrayListFiles.add("Mémoire interne");
         }
 
@@ -162,16 +178,25 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
             targetedFile = new File(NewArrayListFiles.get(position));
             DirNameHasChanged = false;
         }
-        /*
+
         else if(comesFromBackArrow)
         {
-            targetedFile = new File(NewArrayListFiles.get(position));
+            //find the correct path
+            String path;
+            String result = "Le fichier n'est pas dans ArrayListRoot";
+            for(int i = 0 ; i < ArrayListRoot.size() ; i++)
+            {
+                path = ArrayListRoot.get(i);
+                String[] splitedPath = path.split("/", 0);
+                String fileName = splitedPath[splitedPath.length - 1];
+                if(ArrayListFiles.get(position).equals(fileName)) result = path;
+            }
+            targetedFile = new File(result);
             comesFromBackArrow = false;
         }
-        */
         else
         {
-            targetedFile = new File(NewArrayListFiles.get(recognizeIndex(dirName, ArrayListFiles.size())));
+            targetedFile = new File(NewArrayListFiles.get(recognizeIndex(dirName, ArrayListFiles.size() )));
         }
 
         //------------------------------ firstDirectory in root ----------------------------------//
@@ -181,90 +206,111 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
             for (int i = 0; i < fichiers.length; i++)
             {
                 // directory : {"Cascada.mp3", "Hello.mp3"} for example ("Music" here)
-                File[] directory = fichiers[i].listFiles();
+                File[] directories = fichiers[i].listFiles();
                 //Displaying only directories which are not empty
-                if (fichiers[i].listFiles() != null && directory.length > 0)
+                if (fichiers[i].listFiles() != null && directories.length > 0)
                 {
-                    String chemin = directory[0].getParentFile().getPath(); //we only need to display the directory
-                    //System.out.println("in if chemin = " + chemin);
+                    String chemin = directories[0].getParentFile().getPath(); //we only need to display the directory
                     File tempFile = new File(chemin);
                     Arraytemp.add(tempFile);
                 }
                 else
                 {
-                    //System.out.println("in else fichiers[i].getName() = " + fichiers[i].getName());
                     Arraytemp.add(fichiers[i]);
                 }
             }
-            clearHiddenDir(newFichiers = Arraytemp.toArray(new File[Arraytemp.size()])); // convert an ArrayList <File> into File []
+            newFichiers = Arraytemp.toArray(new File[Arraytemp.size()]); // convert an ArrayList <File> into File []
+            //clearHiddenDir(newFichiers = Arraytemp.toArray(new File[Arraytemp.size()])); // convert an ArrayList <File> into File []
             firstDirectory = false;
         }
         else if (dirName.equals("Mémoire externe"))
         {
             fromExternalMemory = true;
             ArrayList <File> directories = new ArrayList<File>();
+
             for (int i = 1; i < extRootPaths.size(); i++)
             {
                 directories.add(extRootPaths.get(i).getAbsoluteFile());
             }
-            //newFichiers = extRootPaths.get(1).listFiles();
-            newFichiers = clearHiddenDir(directories.toArray(new File[directories.size()])); // convert an ArrayList <File> into File []
+            //newFichiers = clearHiddenDir(directories.toArray(new File[directories.size()])); // convert an ArrayList <File> into File []
+            newFichiers = directories.toArray(new File[directories.size()]); // convert an ArrayList <File> into File []
             firstDirectory = false;
         }
         //------------------------ rest of the directories in root --------------------------------//
         else if(targetedFile.isDirectory())
         {
-            newFichiers = clearHiddenDir(targetedFile.listFiles());
+            //newFichiers = clearHiddenDir(targetedFile.listFiles());
+            newFichiers = targetedFile.listFiles();
+        }
+        else if (targetedFile.isFile())
+        {
+            String extension = targetedFile.getName().substring(targetedFile.getName().lastIndexOf(".") + 1);
+            //check if the file is an audio one
+            ArrayList<String> audioExention = new ArrayList<>(Arrays.asList("mp3", "m4a", "wav","aac","flac","mid","xmf","mxmf","rttl","rtx","ota","imy","mkv","wav","ogg"));
+            boolean audioFile = false;
+            for (String s : audioExention) if(extension.equals(s)) audioFile = true;
+
+            //display the alert box if the fil is correct
+            if(extension.equals("pdf"))
+            {
+                //displayAlertBox(targetedFile.getName());
+                //communicate the result to ChangePartition activity
+                Intent intent = new Intent();
+                intent.putExtra("RESULT_STRING", targetedFile.getPath());
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+            else Toast.makeText(getApplicationContext(), "Le fichier sélectionné n'est pas un pdf", Toast.LENGTH_SHORT).show();
+            //TODO rajouter l'option : fichier audio
+            newFichiers = fichiers;
         }
         else
         {
-            newFichiers = fichiers;
-            displayAlertBox(targetedFile.getName());
+            System.out.println("error, targetedFile is not a file");
+            newFichiers = null;
         }
         ArrayListFiles.clear();
         FilesIndex.clear();
 
         //fill the ArrayListFiles which contain all the files & directories name
         temp = sortFilesByName(newFichiers, false);
+        ArrayList<String> tempRoot = sortFilesByName(newFichiers, true);
         for(int i=0; i < temp.size(); i++)
         {
             // change the external SD cards Name into {carte SD n°1; carte SD n°2; ...}
-            if(fromExternalMemory)
+            if(fromExternalMemory && !lockIt)
             {
+                cutLastPartOfListRoot(); // cut the last part of arrayListRoot
                 DirNameHasChanged = true;
                 for(int j = 0; j < newFichiers.length; j++)
                 {
                     ArrayListFiles.add("Carte SD n°" + (j+1));
-                    ArrayListRoot.add(temp.get(i));
+                    ArrayListRoot.add(tempRoot.get(i));
                 }
+                lockIt = true;
             }
             else
             {
                 ArrayListFiles.add(temp.get(i));
-                ArrayListRoot.add(temp.get(i));
+                ArrayListRoot.add(tempRoot.get(i)); //because we initialized ArrayListRoot on the OnCreate
             }
         }
-        ArrayListRoot.add("break");
+        ArrayListRoot.add("break"); //because we initialized ArrayListRoot on the OnCreate
 
         if(newFichiers != null && newFichiers.length > 0)
         {
             fichiers = newFichiers;
-            currentFileIsEmpty = false;
         }
-        else currentFileIsEmpty = true;
 
         prevClickComesListView = true;
-        nodeCounter++;
-        adapter.notifyDataSetChanged();//refresh the adapter
-        //listViewFiles.invalidateViews(); //refresh the ListView
+        fileName = ArrayListFiles;
+        adapter = new FileAdapter(this, fileName, fileIcon, fileColor);
+        listViewFiles.setAdapter(adapter);
     }
 
     //recognizeIndex between the list of the files and the same list which is sorted
     public int recognizeIndex(String fileName, int dirLength)
     {
-        for(String s : FilesIndex)
-            System.out.println("FilesIndex = " + s);
-        for(int i = 0 ; i < dirLength ; i++) Log.e("recognizeIndex","FilesIndex n°" + i + " : " + FilesIndex.get(i));
         for(int i = 0 ; i < dirLength ; i++)
         {
             if(fileName.equals(FilesIndex.get(i))) return i;
@@ -292,24 +338,36 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         return result;
     }
 
-    public ArrayList<String> sortFilesByName(File[] files, boolean callFromBackButton)
+    public ArrayList<String> sortFilesByName(File[] files, boolean addFilePath)
     {
         ArrayList<String> result = new ArrayList<>();
-        if (files != null) {
+        if (files != null)
+        {
             ArrayList<String> filePart = new ArrayList<>();
             ArrayList<String> dirPart = new ArrayList<>();
 
             FilesIndex.clear();
+            fileIcon.clear();
+            fileName.clear();
+            fileColor.clear();
 
             //getting the name of each file and seperate them whether it's a directory or a file
-            for (int i = 0; i < files.length; i++) {
+            for (int i = 0; i < files.length; i++)
+            {
                 String path = files[i].getPath();
                 String[] splitedPath = path.split("/", 0);
-                //if(callFromBackButton == false)FilesIndex.add(splitedPath[splitedPath.length - 1]);
                 FilesIndex.add(splitedPath[splitedPath.length - 1]);
 
-                if (files[i].isDirectory()) dirPart.add(splitedPath[splitedPath.length - 1]);
-                else filePart.add(splitedPath[splitedPath.length - 1]);
+                if (files[i].isDirectory())
+                {
+                    if(!addFilePath) dirPart.add(splitedPath[splitedPath.length - 1]);
+                    else dirPart.add(path);
+                }
+                else
+                {
+                    if(!addFilePath) filePart.add(splitedPath[splitedPath.length - 1]);
+                    else filePart.add(path);
+                }
             }
 
             //sorting the directories/files by name. We implemented the Comparator interface and override the compare method
@@ -327,12 +385,23 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                 }
             });
 
-            //Add the direcories and the files to the final result
+            //Add the directories and the files to the final result
             for (int i = 0; i < files.length; i++) {
-                if (i < dirPart.size()) result.add(dirPart.get(i));
-                else result.add(filePart.get(i - dirPart.size()));
+                if (i < dirPart.size())
+                {
+                    result.add(dirPart.get(i));
+                    fileIcon.add(R.mipmap.file_arrow);
+                    fileColor.add(getResources().getColor(R.color.cyan));
+                }
+                else
+                {
+                    result.add(filePart.get(i - dirPart.size()));
+                    fileIcon.add(R.mipmap.empty);
+                    fileColor.add(Color.BLACK);
+                }
             }
         }
+        else System.out.println("files = null");
         return result;
     }
 
@@ -345,118 +414,47 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
     public void backArrowFunc()
     {
         nodeCounter--;
-        if (nodeCounter < 0)
+        comesFromBackArrow = true;
+
+        if(nodeCounter == 0)
         {
-            nodeCounter = 0;
+            onCreateInit();
+        }
+        else if(nodeCounter == 1 && fromExternalMemory)
+        {
+            firstDirectory = false;
+
+            ArrayList <File> sdcards = new ArrayList<File>();
+            //The reason for the multiple ".getParentFile()" is to go up another folder, since the original path is .../**Android**/data/YOUR_APP_PACKAGE_NAME/files/
+            for(final File file : externalSDFiles) sdcards.add(file.getParentFile().getParentFile().getParentFile().getParentFile());
+
+            //target the external memory
+            ArrayList <File> directories = new ArrayList<File>();
+            for (int i = 1; i < sdcards.size(); i++)
+            {
+                directories.add(sdcards.get(i).getAbsoluteFile());
+            }
+            File [] newFichiers = directories.toArray(new File[directories.size()]); // convert an ArrayList <File> into File []
+
+            //fill the lists with all the external memories
+            ArrayListFiles.clear();
             FilesIndex.clear();
-            onBackPressed();
+            ArrayList<String> temp = sortFilesByName(newFichiers, false);
+            ArrayList<String> tempRoot = sortFilesByName(newFichiers, true);
+            cutLastPartOfListRoot();//Cut the last part of ArrayListRoot
+            DirNameHasChanged = true;
+            for(int i=0; i < temp.size(); i++) {
+                for (int j = 0; j < newFichiers.length; j++) {
+                    ArrayListFiles.add("Carte SD n°" + (j + 1));
+                }
+            }
+            fichiers = newFichiers;
+            fileName = ArrayListFiles;
+            adapter = new FileAdapter(this, fileName, fileIcon, fileColor);
+            listViewFiles.setAdapter(adapter);
         }
         else
         {
-            for(File file : fichiers)
-                System.out.println("chemin fichier = " + file.getPath());
-
-            comesFromBackArrow = true;
-            //Cut the last part of ArrayListRoot
-            int breakCounter = 0;
-            int j = ArrayListRoot.size();
-            while (breakCounter < 2) {
-                if (ArrayListRoot.get(j - 1).equals("break")) breakCounter++;
-                //delete the last element
-                if (breakCounter < 2) ArrayListRoot.remove(j - 1);
-                j--;
-            }
-
-            /*
-            for(String s : ArrayListRoot)
-                System.out.println("ArrayListRoot = " + s);
-                */
-
-            ArrayListFiles.clear();
-            //fill the ArrayListFiles from the ArrayListRoot
-            boolean fillArraylistFile = true;
-            breakCounter = 0;
-            for (int i = ArrayListRoot.size() - 1; i >= 0; i--)
-            {
-                if (ArrayListRoot.get(i).equals("break")) breakCounter++;
-                if (breakCounter >= 2) fillArraylistFile = false;
-                if (fillArraylistFile && !ArrayListRoot.get(i).equals("break")) ArrayListFiles.add(ArrayListRoot.get(i));
-            }
-
-            /*
-            System.out.println("");
-            for(String s : ArrayListFiles)
-                System.out.println("  ArrayListFiles = " + s);
-                */
-
-            //sorting the directories
-            Collections.sort(ArrayListFiles, new Comparator<String>() {
-                public int compare(String arg0, String arg1) {
-                    return arg0.compareToIgnoreCase(arg1); // To compare string values alphabetically
-                }
-            });
-
-            /*
-            //refresh fichiers
-            ArrayList <File> prevFichiers = new ArrayList<File>();
-            for (int i = 0; i < fichiers.length ; i++)
-            {
-
-            }
-            */
-            fichiers = clearHiddenDir(fichiers[0].getParentFile().listFiles());
-
-            for(File file : fichiers)
-                System.out.println("  chemin fichier = " + file.getPath());
-
-            for(String s : FilesIndex)
-                System.out.println("     FilesIndex = " + s);
-
-            adapter.notifyDataSetChanged();//refresh the adapter
-            /*
-            System.out.println(" ");
-            for(String s : ArrayListRoot)
-                System.out.println("ArrayListRoot = " + s);
-            */
-            //for (String s : ArrayListRoot) Log.e("NavigationUp", "ArrayListRoot " + s);
-
-            /*
-            //Refresh ArrayListFile
-            breakCounter = 0;
-            ArrayListFiles.clear();
-            int i = 0;
-            int length = ArrayListRoot.size() - 1;
-            //Log.e("NavigationUp", "NodeCounter = " + nodeCounter);
-            //Log.e("NavigationUp", "length = " +length+" "+ ArrayListRoot.get(length - i) );
-            while (breakCounter < 2)
-            {
-                //Log.e("NavigationUp", "avant get");
-                if (ArrayListRoot.get(length - i).equals("break"))
-                {
-                    //Log.e("NavigationUp", "après get " + i);
-                    breakCounter++;
-                }
-                else if (breakCounter < 2)
-                {
-                    ArrayListFiles.add(ArrayListRoot.get(length - i));
-                    //Log.e("NavigationUp", "ArrayListRoot " + i + " " + ArrayListRoot.get(length - i));
-                }
-                i++;
-
-            }*/
-        }
-    }
-
-    //TODO finir de coder cette partie
-    @Override
-    public boolean onSupportNavigateUp()
-    {
-        for(String s : ArrayListRoot)
-            System.out.println("ArrayListRoot = " + s);
-
-        if (backArrow)
-            {
-                nodeCounter--;
             if (nodeCounter < 0)
             {
                 nodeCounter = 0;
@@ -464,56 +462,80 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                 onBackPressed();
             }
             else
-                {
+            {
+                comesFromBackArrow = true;
+                cutLastPartOfListRoot();//Cut the last part of ArrayListRoot
+
+                for(String s : ArrayListRoot)
+                    System.out.println("ArrayListRoot = " + s);
+
                 //fill the ArrayListFiles from the ArrayListRoot
+                ArrayList<String> pathToFiles = new ArrayList<>();
+                ArrayListFiles.clear();
+                FilesIndex.clear();
                 boolean fillArraylistFile = true;
                 int breakCounter = 0;
-                for (int i = ArrayListRoot.size() - 2; i >= 0; i--) {
+                for (int i = ArrayListRoot.size() - 1; i >= 0; i--)
+                {
                     if (ArrayListRoot.get(i).equals("break")) breakCounter++;
-                    if (breakCounter == 2) fillArraylistFile = false;
-                    if (fillArraylistFile) ArrayListFiles.add(ArrayListRoot.get(i));
-                }
+                    if (breakCounter >= 2) fillArraylistFile = false;
+                    if (fillArraylistFile && !ArrayListRoot.get(i).equals("break"))
+                    {
+                        pathToFiles.add(ArrayListRoot.get(i));
+                        String path = ArrayListRoot.get(i);
+                        String[] splitedPath = path.split("/", 0);
 
-                //Cut the las part of ArrayListRoot
-                breakCounter = 0;
-                boolean removeListRoot = true;
-                ArrayList<String> temp = new ArrayList<>(ArrayListRoot.size());
-                //int tempLenght = ArrayListRoot.size() - 1;
-                int j = 0;
-                while (breakCounter < 2) {
-                    if (ArrayListRoot.get(ArrayListRoot.size() - 1).equals("break")) breakCounter++;
-                    //delete the last element
-                    if (breakCounter < 2) ArrayListRoot.remove(ArrayListRoot.size() - 1);
-                }
-                //for (String s : ArrayListRoot) Log.e("NavigationUp", "ArrayListRoot " + s);
-
-                //Refresh ArrayListFile
-                breakCounter = 0;
-                ArrayListFiles.clear();
-                int i = 0;
-                int length;
-                Log.e("NavigationUp", "NodeCounter = " + nodeCounter);
-                length = ArrayListRoot.size() - 1;
-                //Log.e("NavigationUp", "length = " +length+" "+ ArrayListRoot.get(length - i) );
-                while (breakCounter < 2) {
-                    //Log.e("NavigationUp", "avant get");
-                    if (ArrayListRoot.get(length - i).equals("break")) {
-                        Log.e("NavigationUp", "après get " + i);
-                        breakCounter++;
-                    } else if (breakCounter < 2) {
-                        ArrayListFiles.add(ArrayListRoot.get(length - i));
-                        Log.e("NavigationUp", "ArrayListRoot " + i + " " + ArrayListRoot.get(length - i));
+                        ArrayListFiles.add(splitedPath[splitedPath.length - 1]);
+                        FilesIndex.add(splitedPath[splitedPath.length - 1]);
                     }
+                    fileName = ArrayListFiles;
+                    adapter = new FileAdapter(this, fileName, fileIcon, fileColor);
+                    listViewFiles.setAdapter(adapter);
+                }
+
+                //sort the files
+                ArrayList<File> arrayFilesToSort = new ArrayList<File>();
+                int i = 0;
+                for (String s : pathToFiles) {
+                    arrayFilesToSort.add(new File(s));
+                    System.out.println("pathToFiles = " + s);
                     i++;
                 }
+
+                File[] filesToSort = arrayFilesToSort.toArray(new File[arrayFilesToSort.size()]); // convert an ArrayList <File> into File []
+                ArrayListFiles = sortFilesByName(filesToSort, false);
+                if (ArrayListFiles.get(0).equals("Mémoire externe") && nodeCounter == 0) {
+
+                    //define the icon next to the two main directories
+                    fileIcon.clear();
+                    fileIcon.add(R.mipmap.file_arrow);
+                    fileIcon.add(R.mipmap.file_arrow);
+
+                    //define the color of the two main directories
+                    fileColor.clear();
+                    fileColor.add(getResources().getColor(R.color.cyan));
+                    fileColor.add(getResources().getColor(R.color.cyan));
+                }
+
+                fichiers = fichiers[0].getParentFile().listFiles();
+                //Refresh the ListView
+                fileName = ArrayListFiles;
+                adapter = new FileAdapter(this, fileName, fileIcon, fileColor);
+                listViewFiles.setAdapter(adapter);
             }
         }
-        else
-        {
-            for(String s : ArrayListRoot)
-                System.out.println("ArrayListRoot = " + s);
+    }
+
+    void cutLastPartOfListRoot()
+    {
+        int breakCounter = 0;
+        int k = ArrayListRoot.size();
+        while (breakCounter < 2) {
+            if (ArrayListRoot.get(k - 1).equals("break")) breakCounter++;
+            //delete the last element
+            if (breakCounter < 2) ArrayListRoot.remove(k - 1);
+            k--;
         }
-        return true;
     }
 
     boolean displayAlertBox(String fileName) {
@@ -572,10 +594,10 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
 
         builder1.setNegativeButton(
                 "Non",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //Log.e("dialog"," id = " + id);
-                        //resultOfAlertBox = false;
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
                         dialog.cancel();
                     }
                 });
@@ -645,66 +667,3 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         }
     }
 }
-
-// TODO extra code from NavigationUP
-
-//for (String s : ArrayListFiles) Log.e("NavigationUp", "ArrayListFiles " + s);
-//adapter.notifyDataSetChanged();//refresh the adapter
-                    /*
-                    for (int i = ArrayListRoot.size() - 1 ; i > 0 ; i--)
-                    {
-                        Log.e("Navigation Up", "ArrayListRoot.size() = "+ ArrayListRoot.size() + " i =  " + i + " j =  " + j + "  (i - j) = " + (i-j));
-                        //if (!removeListRoot) tempLenght --;
-                        //if (removeListRoot)
-                        //{
-                        //}
-                        if (ArrayListRoot.get(i - j).equals("break"))
-                        {
-                            Log.e("Navigation Up", "break ++");
-                            breakCounter ++;
-                            //removeListRoot = false;
-                        }
-                        ArrayListRoot.remove(i);
-                        j++;
-                        if (breakCounter == 2) break;
-                    }
-                    for (String s: ArrayListRoot)
-                    {
-                        Log.e("NavigationUp", "ArrayListRoot " + s);
-                    }
-                    */
-                    /*
-                    prevClickComesListView = false;
-                    firstTimeOpened = false;
-
-                    File [] parent;
-                    if (currentFileIsEmpty) parent = fichiers[0].getParentFile().listFiles();
-                    else parent = fichiers[0].getParentFile().getParentFile().listFiles();
-                    //if(fichiers.length > 0) parent = fichiers[0].getParentFile().getParentFile().listFiles();
-                    ArrayList<String> actualTemp;
-                    ArrayList<String> prevTemp;
-                    actualTemp = sortFilesByName(parent, true);
-                    prevTemp = sortFilesByName(fichiers, true);
-                    //PrevArrayListFiles
-                    FilesIndex.clear();
-                    ArrayListFiles.clear();
-                    PrevArrayListFiles.clear();
-                    //if(actualTemp.size() > 0 ) Log.i("Navigation", "Je remplis la liste !");
-                    for (int i = 0; i < actualTemp.size(); i++)
-                    {
-                        ArrayListFiles.add(actualTemp.get(i));
-                        FilesIndex.add(actualTemp.get(i));
-                        //Log.i("Navigation", "ArrayListFiles " + i + " " + ArrayListFiles.get(i));
-                    }
-
-                    for (int i = 0; i < prevTemp.size(); i++)
-                    {
-                        PrevArrayListFiles.add(prevTemp.get(i));
-                        //FilesIndex.add(prevTemp.get(i));
-                        //Log.e("Navigation", "PrevArrayListFiles " + i + " " + PrevArrayListFiles.get(i));
-                    }
-                    //for (int i = 0; i < parent.length; i++) Log.i("Navigation", "parent " + i + " " + parent[i].getName());
-                    fichiers = parent;
-                    adapter.notifyDataSetChanged();//refresh the adapter
-                    //listViewFiles.invalidateViews();
-                    */
