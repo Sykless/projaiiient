@@ -30,6 +30,10 @@ public class Playlist
     {
         arrayListPlaylist = arrayList;
     }
+    public void setPartition(int idSong, Partition partition)
+    {
+        arrayListPlaylist.set(idSong,partition);
+    }
     public void addPartition(Partition partition)
     {
         arrayListPlaylist.add(partition);

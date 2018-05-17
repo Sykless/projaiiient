@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -365,6 +367,9 @@ public class SelectSongPlaylist extends AppCompatActivity
                         }
                     });
 
+                    textArtist.setVisibility(View.VISIBLE);
+                    textTitle.setVisibility(View.VISIBLE);
+/*
                     if (displayChoice == TITLE)
                     {
                         textTitle.setBackgroundColor(getResources().getColor(R.color.darkcyan));
@@ -375,7 +380,7 @@ public class SelectSongPlaylist extends AppCompatActivity
                         textTitle.setBackgroundColor(getResources().getColor(R.color.cyan));
                         textArtist.setBackgroundColor(getResources().getColor(R.color.darkcyan));
                     }
-
+*/
                     for (int i = 0 ; i < arraySize ; i++)
                     {
                         linearLayout.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.cyan));
@@ -392,16 +397,8 @@ public class SelectSongPlaylist extends AppCompatActivity
                     createLayout.setClickable(false);
                     toDelete = new ArrayList<>();
 
-                    if (displayChoice == TITLE)
-                    {
-                        textTitle.setBackgroundColor(getResources().getColor(R.color.darkred));
-                        textArtist.setBackgroundColor(getResources().getColor(R.color.red));
-                    }
-                    else
-                    {
-                        textTitle.setBackgroundColor(getResources().getColor(R.color.red));
-                        textArtist.setBackgroundColor(getResources().getColor(R.color.darkred));
-                    }
+                    textArtist.setVisibility(View.GONE);
+                    textTitle.setVisibility(View.GONE);
 
                     deleteMode = true;
                 }
@@ -470,6 +467,8 @@ public class SelectSongPlaylist extends AppCompatActivity
         if (selectionPartitionPlaylist == PLAYLIST)
         {
             arraySize = playlistList.size();
+            textArtist.setVisibility(View.GONE);
+            textTitle.setVisibility(View.GONE);
         }
 
         for (int i = 0 ; i < arraySize ; i++)
@@ -705,6 +704,59 @@ public class SelectSongPlaylist extends AppCompatActivity
                     {
                         newPartitionList.add(partitionList.get(i));
                     }
+                    else // I will delete this song
+                    {
+                        int inDelete = 0;
+                        ArrayList<Integer> sameSong = new ArrayList<>();
+
+                        for (int j = 0 ; j < partitionList.size() ; j++)
+                        {
+                            if (partitionList.get(j).getTitle().equals(partitionList.get(i).getTitle())
+                                    && partitionList.get(j).getArtist().equals(partitionList.get(i).getArtist())
+                                    && partitionList.get(j).getFile().getName().equals(partitionList.get(i).getFile().getName())
+                                    && partitionList.get(j).getSpeed() == partitionList.get(i).getSpeed() && i != j)
+                            {
+                                sameSong.add(j);
+                            }
+                        }
+
+                        for (Integer j : sameSong)
+                        {
+                            if (toDelete.contains(j))
+                            {
+                                inDelete++;
+                            }
+                        }
+
+                        if (inDelete == sameSong.size())
+                        {
+                            ArrayList<Playlist> newPlaylistList = new ArrayList<>();
+
+                            for (int j = 0 ; j < playlistList.size() ; j++)
+                            {
+                                ArrayList<Partition> newPlaylist = new ArrayList<>();
+
+                                for (Partition partition : playlistList.get(j).getPartitionList())
+                                {
+                                    if (!partition.getTitle().equals(partitionList.get(i).getTitle())
+                                            || !partition.getArtist().equals(partitionList.get(i).getArtist())
+                                            || !partition.getFile().getName().equals(partitionList.get(i).getFile().getName())
+                                            || !(partition.getSpeed() == partitionList.get(i).getSpeed()))
+                                    {
+                                        newPlaylist.add(partition);
+                                    }
+                                }
+
+                                newPlaylistList.add(new Playlist(playlistList.get(j).getName(),newPlaylist));
+                            }
+
+                            String json = gson.toJson(newPlaylistList);
+
+                            editor.putString("playlistList", json);
+                            editor.apply();
+                            app.savePlaylistList(newPlaylistList);
+                        }
+                    }
                 }
 
                 String json = gson.toJson(newPartitionList);
@@ -718,8 +770,6 @@ public class SelectSongPlaylist extends AppCompatActivity
             {
                 ArrayList<Playlist> newPlaylistList = new ArrayList<>();
 
-                System.out.println("Premier indice : " + toDelete.get(0));
-
                 for (int i = 0 ; i < playlistList.size() ; i++)
                 {
                     System.out.println(i);
@@ -730,8 +780,6 @@ public class SelectSongPlaylist extends AppCompatActivity
                         newPlaylistList.add(playlistList.get(i));
                     }
                 }
-
-                System.out.println("new size : " + newPlaylistList.size());
 
                 String json = gson.toJson(newPlaylistList);
 

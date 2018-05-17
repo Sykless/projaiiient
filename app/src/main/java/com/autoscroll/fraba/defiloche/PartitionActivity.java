@@ -94,7 +94,6 @@ public class PartitionActivity extends Application
     {
         arrayListPlaylist.add(playlist);
     }
-
     void savePartitionList(ArrayList<Partition> partitionList)
     {
         arrayListPartition = partitionList;
