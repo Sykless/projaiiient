@@ -130,16 +130,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginBottom="16dp"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="8dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="start"
             android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@+id/speedTV"
-            app:layout_constraintEnd_toStartOf="@+id/paramButton"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/relativeLayoutParcourir"
             app:layout_constraintTop_toBottomOf="@+id/relativeLayoutParcourir">
 
             <TextView
@@ -249,6 +247,22 @@
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titreLayout" />
+
+        <ImageView
+            android:id="@+id/arrowSwap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintBottom_toBottomOf="@+id/titreLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/titreLayout"
+            app:layout_constraintTop_toTopOf="@+id/titreLayout"
+            app:layout_constraintVertical_bias="0.39999998"
+            app:srcCompat="@drawable/ic_swap_vert_white_48dp" />
 
     </android.support.constraint.ConstraintLayout>
 

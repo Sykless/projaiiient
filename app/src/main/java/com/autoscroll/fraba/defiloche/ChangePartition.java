@@ -69,6 +69,7 @@ public class ChangePartition extends AppCompatActivity {
     int imageViewWidth;
     int PersonalRatingBarHeigth;
     int speedSelected = 11;
+    int arrowSwapSize;
 
     float policeSize = 16;
     float buttonPoliceSize;
@@ -98,44 +99,6 @@ public class ChangePartition extends AppCompatActivity {
             }
         });
 
-        //---------------------------------------test---------------------------------------------//
-
-        final File[] appsDir= ContextCompat.getExternalFilesDirs(this,null);
-        final ArrayList<File> extRootPaths=new ArrayList<>();
-        for(final File file : appsDir) {
-            extRootPaths.add(file.getParentFile().getParentFile().getParentFile().getParentFile());
-        }
-
-        /*
-        for(final File file : extRootPaths)
-            System.out.println(file.getPath());
-            */
-
-        File [] externalFichiers = extRootPaths.get(1).listFiles();
-        /*
-        for(final  File file : externalFichiers)
-            System.out.println("external dir = " + file.getName());
-            */
-        /*
-        File testExt = new File(extRootPaths.get(1).getPath(), "testExt.txt");
-        System.out.println("testExt.getPath() = " + testExt.getPath());
-        System.out.println("testExt.mkdir() = " + testExt.mkdirs());
-
-        File [] externalFichiers = extRootPaths.get(1).listFiles();
-        for(final  File file : externalFichiers)
-            System.out.println("external dir = " + file.getName());
-
-        try //copy and clear the activity
-        {
-            copy(externalFichiers[2]);
-        }
-        catch (IOException e)
-        {
-            Log.e("AlertBox OnItemclick", e.getMessage());
-        }
-        */
-        //---------------------------------------test---------------------------------------------//
-
         //create a personnal Layout wich extends LinearLayout
         MyPersonalRatingBar = new MyLinearLayout(this);
         MyPersonalRatingBar.setClickable(true);
@@ -152,7 +115,7 @@ public class ChangePartition extends AppCompatActivity {
             parcouriButtonHeight = (int) (size.x * 0.1);
             paramButtonHeight = (int) (size.x * 0.07);
             paramButtonWidth = (int) (size.x * 0.5);
-            extremeMargin = (int) (size.x * 0.022);
+            extremeMargin = (int) (size.x * 0.122);
             titreLayoutHeight = (int) (size.x * 0.38);
             titreLayoutWidth = (int) (size.x * 0.6);
             titreHeight = (int) (size.x * 0.08);
@@ -165,6 +128,7 @@ public class ChangePartition extends AppCompatActivity {
             imageViewHeight = (int) (size.x/22);
             imageViewWidth = (int) (size.x/22);
             PersonalRatingBarHeigth = (int) ((size.x/21) + 0.05 * size.x);
+            arrowSwapSize = (int) (size.x * 0.13);
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) // Landscape orientation
         {
@@ -173,10 +137,10 @@ public class ChangePartition extends AppCompatActivity {
             parcouriButtonHeight = (int) (size.y * 0.1);
             paramButtonHeight = (int) (size.y * 0.07);
             paramButtonWidth = (int) (size.y * 0.5);
-            extremeMargin = (int) (size.y * 0.022);
+            extremeMargin = (int) (size.y * 0.0522);
             titreLayoutHeight = (int) (size.y * 0.38);
             titreLayoutWidth = (int) (size.y * 0.6);
-            titreHeight = (int) (size.y * 0.08);
+            titreHeight = (int) (size.y * 0.07);
             titreMargin = (int) (size.y * 0.017);
             EDHeight = titreHeight; //EDHeight = (int) (size.y* 0.093);
             EDMargin = (int) (size.x * 0.012);
@@ -186,6 +150,7 @@ public class ChangePartition extends AppCompatActivity {
             imageViewHeight = (int) (size.x/24);
             imageViewWidth = (int) (size.x/24);
             PersonalRatingBarHeigth = (int) ((size.y/22) + 0.05 * size.y);
+            arrowSwapSize = (int) (size.y * 0.13);
         }
 
         // Set the button at 25% "parcourir" line
@@ -199,11 +164,13 @@ public class ChangePartition extends AppCompatActivity {
         ConstraintLayout.LayoutParams parcourirLineParam = (ConstraintLayout.LayoutParams) relativeLayoutParcourir.getLayoutParams();
         parcourirLineParam.setMargins(0, extremeMargin, 0, 0);
 
+
         // buttons param setup
         Button paramButton = (Button) findViewById(R.id.paramButton);
         paramButton.setWidth(paramButtonWidth);
         paramButton.setHeight(paramButtonHeight);
         paramButton.setTextSize(buttonPoliceSize);
+        paramButton.setVisibility(View.GONE); //TODO make it visible
 
         // buttons validate setup
         Button validateButton = (Button) findViewById(R.id.validateButton);
@@ -218,11 +185,11 @@ public class ChangePartition extends AppCompatActivity {
         partitionNameView.setTextSize(buttonPoliceSize);
 
         // EditText artiste setup
-        EditText artisteED = (EditText) findViewById(R.id.artisteED);
+        final EditText artisteED = (EditText) findViewById(R.id.artisteED);
         artisteED.setTextSize(policeSize);
 
         // EditText titre setup
-        EditText titreED = (EditText) findViewById(R.id.titreED);
+        final EditText titreED = (EditText) findViewById(R.id.titreED);
         titreED.setTextSize(policeSize);
 
         // TextView artiste setup
@@ -239,17 +206,39 @@ public class ChangePartition extends AppCompatActivity {
         RelativeLayout titreLayout = (RelativeLayout) findViewById(R.id.titreLayout);
         titreLayout.getLayoutParams().width = titreLayoutWidth;
 
+        //arrowSwap setup
+        ImageView arrowSwap =  findViewById(R.id.arrowSwap);
+        arrowSwap.getLayoutParams().height = arrowSwapSize;
+        arrowSwap.getLayoutParams().width = arrowSwapSize;
+        arrowSwap.setColorFilter(getResources().getColor(R.color.cyan));
+        arrowSwap.setClickable(true);
+        arrowSwap.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String artiste = artisteED.getText().toString();
+                String titre = titreED.getText().toString();
+
+                if(!artiste.equals("") && !titre.equals(""))
+                {
+                    String buffer = titre;
+                    titreED.setText(artiste);
+                    artisteED.setText(buffer);
+                }
+            }
+        });
+
+
         //define the constraint layout below the toolbar
         ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
 
         //SpeedTV setup
         TextView speedTV = findViewById(R.id.speedTV);
-        // + " = " + (speedSelected - 20)*
         int secondesTotal = (21 - speedSelected) * 20;
         int minutes = secondesTotal / 60;
         int secondes = secondesTotal % 60;
         speedTV.setText("Vitesse de défilement = " +  minutes + ":" + secondes + " minutes");
-        //speedTV.setText("Vitesse de défilement : " + speedSelected + " - " +  minutes + ":" + secondes + " minutes");
         speedTV.setTextSize(policeSize);
 
         //Add the PersonalRatingBar to the layout and define it's constraints
@@ -343,6 +332,28 @@ public class ChangePartition extends AppCompatActivity {
                 return false;
             }
         });
+
+        //TODO changer le bouton "VALIDER" en bouton "MODIFIER"
+        //get the partition's position in the partition's memory
+        Intent intent = getIntent();
+        int partitionPosition = intent.getIntExtra("songNumber",-1);
+
+        //if the user don't want to change a partition
+        if(partitionPosition != -1)
+        {
+            //get the list of all the partitions
+            PartitionActivity app = (PartitionActivity) getApplicationContext();
+            ArrayList<Partition> list = app.getPartitionList();
+
+            //set the fields regarding the partition's information
+            Partition selectedPartition = list.get(partitionPosition);
+            artisteED.setText(selectedPartition.getArtist());
+            titreED.setText(selectedPartition.getTitle());
+            speedSelected = selectedPartition.getSpeed();
+            PDFName = selectedPartition.getFile().getName();
+            partitionNameView.setText(PDFName);
+            partitionNameView.setTextColor(Color.BLACK);
+        }
     }
 
     public class MyLinearLayout extends LinearLayout
@@ -396,7 +407,8 @@ public class ChangePartition extends AppCompatActivity {
                 //fill the artiste and titre fields
                 EditText artisteED = findViewById(R.id.artisteED);
                 EditText titreED = findViewById(R.id.titreED);
-                if(artisteED.length() == 0 && titreED.length() == 0) setArtisteTitre(PDFName);
+                //if(artisteED.length() == 0 && titreED.length() == 0) setArtisteTitre(PDFName);
+                setArtisteTitre(PDFName);
             }
         }
     }
@@ -413,10 +425,14 @@ public class ChangePartition extends AppCompatActivity {
     }
 
     public void validateButton(View view) {
+        Intent intent = getIntent();
+        int partitionPosition = intent.getIntExtra("songNumber",-1);
+
         PartitionActivity app = (PartitionActivity) getApplicationContext();
         ArrayList<Partition> list = app.getPartitionList();
 
-        if (list == null) {
+        if (list == null)
+        {
             list = new ArrayList<>();
         }
         //create a partition
@@ -424,8 +440,57 @@ public class ChangePartition extends AppCompatActivity {
         EditText titreED = findViewById(R.id.titreED);
         int secondesTotal = (21 - speedSelected) * 20;
         if (speedSelected == 0) secondesTotal=0;
-        list.add(new Partition(artisteED.getText().toString(), titreED.getText().toString(), secondesTotal, PDFName));
+        //list.add(new Partition(artisteED.getText().toString(), titreED.getText().toString(), secondesTotal, PDFName));
 
+        //if the user don't want to change a partition
+        if(partitionPosition == -1)
+        {
+
+            if (resultFromParcourir != null)
+            {
+                File targetedFile = new File(resultFromParcourir);
+                boolean fileInDirectory = false;
+                File[] userFiles = userDir.listFiles();
+
+                try //copy and clear the activity
+                {
+                    copy(targetedFile);//copy the partition in the directory
+                    TextView partitionNameView = findViewById(R.id.partitionNameView);
+                    if(!partitionNameView.getText().equals("Partition format PDF"))
+                    {
+                        list.add(new Partition(artisteED.getText().toString(), titreED.getText().toString(), secondesTotal, PDFName));//add the partition in the playlist
+                    }
+
+                    Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
+                    clearLayout();
+                }
+                catch (IOException e)
+                {
+                    Log.e("AlertBox OnItemclick", e.getMessage());
+                }
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Vous n'avez sélectionné aucun fichier", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else
+        {
+            //change the partition's parameters
+            TextView partitionNameView = findViewById(R.id.partitionNameView);
+            if(!partitionNameView.getText().equals(""))
+            {
+                Partition selectedPartition = list.get(partitionPosition);
+                selectedPartition.setArtist(artisteED.getText().toString());
+                selectedPartition.setTitle(titreED.getText().toString());
+                selectedPartition.setSpeed(speedSelected);
+                File temp = new File(userDir.getPath() + "/" + PDFName);
+                selectedPartition.setFile(temp);
+            }
+            finish();
+        }
+
+        //Save the modifications
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPrefs.edit();
         Gson gson = new Gson();
@@ -435,55 +500,17 @@ public class ChangePartition extends AppCompatActivity {
         editor.putString("partitionList", json);
         editor.apply();
         app.savePartitionList(list);
+    }
 
-        if (resultFromParcourir != null)
-        {
-            File targetedFile = new File(resultFromParcourir);
-            boolean fileInDirectory = false;
-            File [] userFiles = userDir.listFiles();
-
-            //check if the file is in the "défileur de partitions" directory
-            for(int i = 0; i< userFiles.length ; i++)
-            {
-                if (targetedFile.getName().equals(userFiles[i].getName()))
-                {
-                    fileInDirectory = true;
-                    //Toast.makeText(getApplicationContext(), "Ce fichier est déjà dans le dossier [Défileur de partitions]", Toast.LENGTH_SHORT).show();
-                }
-            }
-            if(!fileInDirectory)
-            {
-                try //copy and clear the activity
-                {
-                    copy(targetedFile);
-                    Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
-                    TextView partitionNameView = findViewById(R.id.partitionNameView);
-                    partitionNameView.setText("Partition format PDF");
-                    artisteED.setText("");
-                    titreED.setText("");
-                    partitionNameView.setTextColor(Color.parseColor("#808080"));
-                }
-                catch (IOException e)
-                {
-                    Log.e("AlertBox OnItemclick", e.getMessage());
-                }
-            }
-            else
-            {
-                //clear the activity
-                Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
-                TextView partitionNameView = findViewById(R.id.partitionNameView);
-                partitionNameView.setText("Partition format PDF");
-                artisteED.setText("");
-                titreED.setText("");
-                partitionNameView.setTextColor(Color.parseColor("#808080"));
-            }
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(), "Vous n'avez sélectionné aucun fichier", Toast.LENGTH_SHORT).show();
-        }
-
+    public void clearLayout()
+    {
+        EditText artisteED = findViewById(R.id.artisteED);
+        EditText titreED = findViewById(R.id.titreED);
+        TextView partitionNameView = findViewById(R.id.partitionNameView);
+        partitionNameView.setText("Partition format PDF");
+        artisteED.setText("");
+        titreED.setText("");
+        partitionNameView.setTextColor(Color.parseColor("#808080"));
     }
 
     public void setArtisteTitre(String fileName)
@@ -526,8 +553,8 @@ public class ChangePartition extends AppCompatActivity {
     }
 
     //This code comes from StackOverflow : copying a file
-    public void copy(File src) throws IOException {
-        // TODO PRENDRE EN COMPTE LA COPIE DEPUIS UNE CARTE SD
+    public void copy(File src) throws IOException
+    {
         File dst = new File(userDir.getPath() + "/" + PDFName);
         dst.createNewFile();
 

@@ -28,7 +28,8 @@ public class FileAdapter extends ArrayAdapter<String> {
         this.textColor=textColor;
     }
 
-    public View getView(int position,View view,ViewGroup parent) {
+    public View getView(int position,View view,ViewGroup parent)
+    {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.file_adapter_layout, null,true);
 
