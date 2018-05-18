@@ -38,7 +38,6 @@ public class Home extends AppCompatActivity
 
     AnimationDrawable animationPlay;
     AnimationDrawable animationCreate;
-    AnimationDrawable animationShare;
 
     AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F); // Fading animation on button when clicked
     AlphaAnimation buttonClickRelease = new AlphaAnimation(0.8F,1F); // Unfading animation on button when clicked
@@ -59,11 +58,9 @@ public class Home extends AppCompatActivity
 
         ImageView imagePlay = findViewById(R.id.imagePlay);
         ImageView imageCreate = findViewById(R.id.imageCreate);
-        ImageView imageShare = findViewById(R.id.imageShare);
 
         TextView textPlay = findViewById(R.id.textPlay);
         TextView textCreate = findViewById(R.id.textCreate);
-        TextView textShare = findViewById(R.id.textShare);
 
         // Toolbar setup
         setSupportActionBar(toolbar);
@@ -108,11 +105,9 @@ public class Home extends AppCompatActivity
         // Transform every RelativeLayout with ImageView/TextView inside into a clickable Button
         setRelativeLayoutButton(this,R.id.buttonPlay);
         setRelativeLayoutButton(this,R.id.buttonCreate);
-        setRelativeLayoutButton(this,R.id.buttonShare);
 
         RelativeLayout buttonPlay = findViewById(R.id.buttonPlay);
         RelativeLayout buttonCreate = findViewById(R.id.buttonCreate);
-        RelativeLayout buttonShare = findViewById(R.id.buttonShare);
 
         // Add an animation to ImageViews
         imagePlay.setBackgroundResource(R.drawable.animation);
@@ -123,14 +118,9 @@ public class Home extends AppCompatActivity
         animationCreate = (AnimationDrawable) imageCreate.getBackground();
         animationCreate.start();
 
-        imageShare.setBackgroundResource(R.drawable.animation);
-        animationShare = (AnimationDrawable) imageShare.getBackground();
-        animationShare.start();
-
         // Change the size of the text according to orientation
         textPlay.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
         textCreate.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
-        textShare.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
 
         // Change the size of the animation according to orientation
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imagePlay.getLayoutParams();
@@ -138,7 +128,6 @@ public class Home extends AppCompatActivity
         params.height = animSize;
         imagePlay.setLayoutParams(params);
         imageCreate.setLayoutParams(params);
-        imageShare.setLayoutParams(params);
 
         // Setup of fading effect on button when clicked
         buttonClick.setDuration(100);
@@ -169,21 +158,8 @@ public class Home extends AppCompatActivity
             }
         };
 
-        View.OnClickListener buttonEffectShare = new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                v.startAnimation(buttonClick);
-                v.startAnimation(buttonClickRelease);
-
-                goToShare(v);
-            }
-        };
-
         buttonPlay.setOnClickListener(buttonEffect);
         buttonCreate.setOnClickListener(buttonEffectCreate);
-        buttonShare.setOnClickListener(buttonEffectShare);
 
         ActivityCompat.requestPermissions(Home.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -228,17 +204,6 @@ public class Home extends AppCompatActivity
         Intent intent = new Intent(this,ChooseSinglePlaylist.class);
         intent.putExtra("selectionHome",CREATE);
         startActivity(intent);
-    }
-
-    public void goToShare(View view)
-    {
-        /*
-        Intent intent = new Intent(this,SelectSongPlaylist.class);
-        intent.putExtra("selectionHome", SHARE);
-        startActivity(intent);
-        */
-
-        Toast.makeText(app, "Work in progress...", Toast.LENGTH_SHORT).show();
     }
 
     public void setRelativeLayoutButton(Context context, int id)

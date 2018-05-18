@@ -490,7 +490,6 @@ public class ChangePartition extends AppCompatActivity {
     {
         //take the choice from the settings activity
         PartitionActivity app = (PartitionActivity) getApplicationContext();
-        boolean ArtisteTitreChoice = app.getArtisteTitreParam();
         String artiste;
         String titre;
 
@@ -519,13 +518,6 @@ public class ChangePartition extends AppCompatActivity {
             titre = "";
         }
 
-
-        if (!ArtisteTitreChoice)
-        {
-            String buffer = artiste;
-            artiste = titre;
-            titre = buffer;
-        }
         EditText artisteED = findViewById(R.id.artisteED);
         artisteED.setText(artiste);
 

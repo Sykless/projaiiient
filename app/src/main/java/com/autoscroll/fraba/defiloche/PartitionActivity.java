@@ -17,7 +17,10 @@ public class PartitionActivity extends Application
     ArrayList<Partition> arrayListPartition = new ArrayList<>();
     ArrayList<Playlist> arrayListPlaylist = new ArrayList<>();
 
-    boolean artisteTitreParam = true;
+    private static final int ARTIST = 0;
+    private static final int TITLE = 1;
+
+    int artisteTitreParam;
 
     @Override
     public void onCreate()
@@ -35,6 +38,8 @@ public class PartitionActivity extends Application
         json = sharedPrefs.getString("playlistList", null);
         type = new TypeToken<ArrayList<Playlist>>() {}.getType();
         arrayListPlaylist = gson.fromJson(json, type);
+
+        artisteTitreParam = sharedPrefs.getInt("artisteTitreParam", ARTIST);
 
         if (arrayListPartition != null && arrayListPartition.size() > 0)
         {
@@ -103,8 +108,8 @@ public class PartitionActivity extends Application
     {
         arrayListPlaylist = playlistList;
     }
-    boolean getArtisteTitreParam(){return artisteTitreParam;}
-    void setArtisteTitreParam(boolean newValue){artisteTitreParam = newValue;}
+    int getArtisteTitreParam(){return artisteTitreParam;}
+    void setArtisteTitreParam(int newValue){artisteTitreParam = newValue;}
 }
 
 // TODO Add the ArrayList writing in Create menu

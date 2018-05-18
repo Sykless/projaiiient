@@ -45,7 +45,7 @@ public class SelectSongPlaylist extends AppCompatActivity
     private static final int PARTITION = 10;
     private static final int PLAYLIST = 11;
 
-    int displayChoice = TITLE;
+    int displayChoice;
     int arraySize = 0;
 
     boolean setup = false;
@@ -255,27 +255,21 @@ public class SelectSongPlaylist extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if (deleteMode)
+                if (displayChoice == ARTIST)
                 {
-                    if (displayChoice == ARTIST)
-                    {
-                        textTitle.setBackgroundColor(getResources().getColor(R.color.darkred));
-                        textArtist.setBackgroundColor(getResources().getColor(R.color.red));
+                    textTitle.setBackgroundColor(getResources().getColor(R.color.darkcyan));
+                    textArtist.setBackgroundColor(getResources().getColor(R.color.cyan));
 
-                        displayChoice = TITLE;
-                    }
+                    displayChoice = TITLE;
+
+                    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    PartitionActivity app = (PartitionActivity) getApplicationContext();
+
+                    editor.putInt("artisteTitreParam",TITLE);
+                    editor.apply();
+                    app.setArtisteTitreParam(TITLE);
                 }
-                else
-                {
-                    if (displayChoice == ARTIST)
-                    {
-                        textTitle.setBackgroundColor(getResources().getColor(R.color.darkcyan));
-                        textArtist.setBackgroundColor(getResources().getColor(R.color.cyan));
-
-                        displayChoice = TITLE;
-                    }
-                }
-
             }
         });
 
@@ -284,25 +278,20 @@ public class SelectSongPlaylist extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if (deleteMode)
+                if (displayChoice == TITLE)
                 {
-                    if (displayChoice == TITLE)
-                    {
-                        textTitle.setBackgroundColor(getResources().getColor(R.color.red));
-                        textArtist.setBackgroundColor(getResources().getColor(R.color.darkred));
+                    textTitle.setBackgroundColor(getResources().getColor(R.color.cyan));
+                    textArtist.setBackgroundColor(getResources().getColor(R.color.darkcyan));
 
-                        displayChoice = ARTIST;
-                    }
-                }
-                else
-                {
-                    if (displayChoice == TITLE)
-                    {
-                        textTitle.setBackgroundColor(getResources().getColor(R.color.cyan));
-                        textArtist.setBackgroundColor(getResources().getColor(R.color.darkcyan));
+                    displayChoice = ARTIST;
 
-                        displayChoice = ARTIST;
-                    }
+                    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    PartitionActivity app = (PartitionActivity) getApplicationContext();
+
+                    editor.putInt("artisteTitreParam",ARTIST);
+                    editor.apply();
+                    app.setArtisteTitreParam(ARTIST);
                 }
             }
         });
@@ -338,6 +327,9 @@ public class SelectSongPlaylist extends AppCompatActivity
             }
         });
 
+        PartitionActivity app = (PartitionActivity) getApplicationContext();
+        displayChoice = app.getArtisteTitreParam();
+
         if (displayChoice == TITLE)
         {
             textTitle.setBackgroundColor(getResources().getColor(R.color.darkcyan));
@@ -369,18 +361,7 @@ public class SelectSongPlaylist extends AppCompatActivity
 
                     textArtist.setVisibility(View.VISIBLE);
                     textTitle.setVisibility(View.VISIBLE);
-/*
-                    if (displayChoice == TITLE)
-                    {
-                        textTitle.setBackgroundColor(getResources().getColor(R.color.darkcyan));
-                        textArtist.setBackgroundColor(getResources().getColor(R.color.cyan));
-                    }
-                    else
-                    {
-                        textTitle.setBackgroundColor(getResources().getColor(R.color.cyan));
-                        textArtist.setBackgroundColor(getResources().getColor(R.color.darkcyan));
-                    }
-*/
+
                     for (int i = 0 ; i < arraySize ; i++)
                     {
                         linearLayout.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.cyan));
