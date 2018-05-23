@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Défileur de partition</string>
+    <string name="app_name">Lecteur de partition</string>
     <string name="action_play_pause">Play/Pause</string>
     <string name="action_restart">Restart</string>
     <string name="action_home">Home</string>

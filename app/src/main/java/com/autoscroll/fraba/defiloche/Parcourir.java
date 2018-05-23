@@ -50,8 +50,8 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
 
     ListView listViewFiles;
 
-    ArrayList<Integer> fileColor = new ArrayList<Integer>();;
-    ArrayList<Integer> fileIcon = new ArrayList<Integer>();;
+    ArrayList<Integer> fileColor = new ArrayList<Integer>();
+    ArrayList<Integer> fileIcon = new ArrayList<Integer>();
     ArrayList<String> fileName;
     ArrayAdapter<String> adapter;
     ArrayList<String> ArrayListRoot = new ArrayList<>();
@@ -62,7 +62,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
 
     final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
     final File DCIMParentDir = DCIMDir.getParentFile();
-    final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/Défileur de partitions");
+    final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/Lecteur de partition");
     File targetedFile;
     File[] externalSDFiles;
     File[] fichiers;
@@ -164,6 +164,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         File [] newFichiers;
         dirName = ArrayListFiles.get(position);
         NewArrayListFiles = fillListWithFiles(fichiers);
+        boolean nothingToChange = false;
 
         //add the SD external card directory
         if (firstDirectory)
@@ -253,14 +254,53 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
             //display the alert box if the fil is correct
             if(extension.equals("pdf"))
             {
+                Intent prevActivityIntent = getIntent();
+                //String test = prevActivityIntent.getStringExtra("TEST");
+                int comes_from_create = prevActivityIntent.getIntExtra("COMES_FROM_CREATE",100);
+
                 //displayAlertBox(targetedFile.getName());
                 //communicate the result to ChangePartition activity
                 Intent intent = new Intent();
                 intent.putExtra("RESULT_STRING", targetedFile.getPath());
-                setResult(RESULT_OK, intent);
-                finish();
+
+                //if we want to edit a partition
+                if(comes_from_create == -1)
+                {
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+                else
+                {
+                    //check if the file is in the "Lecteur de partition" directory
+                    boolean fileInDirectory = false;
+                    File[] userFiles = userDir.listFiles();
+                    for (int i = 0; i < userFiles.length; i++)
+                    {
+                        if (targetedFile.getName().equals(userFiles[i].getName()))
+                        {
+                            fileInDirectory = true;
+                        }
+                    }
+
+                    if(!fileInDirectory)
+                    {
+                        Toast.makeText(getApplicationContext(), "Ce fichier n'est pas dans le dossier [Lecteur de partition]", Toast.LENGTH_SHORT).show();
+                        nothingToChange = true;
+                        nodeCounter--;
+                    }
+                    else
+                    {
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                }
             }
-            else Toast.makeText(getApplicationContext(), "Le fichier sélectionné n'est pas un pdf", Toast.LENGTH_SHORT).show();
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Le fichier sélectionné n'est pas un pdf", Toast.LENGTH_SHORT).show();
+                nothingToChange = true;
+                nodeCounter--;
+            }
             //TODO rajouter l'option : fichier audio
             newFichiers = fichiers;
         }
@@ -268,6 +308,7 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
         {
             System.out.println("error, targetedFile is not a file");
             newFichiers = null;
+            nodeCounter--;
         }
         ArrayListFiles.clear();
         FilesIndex.clear();
@@ -292,10 +333,10 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
             else
             {
                 ArrayListFiles.add(temp.get(i));
-                ArrayListRoot.add(tempRoot.get(i)); //because we initialized ArrayListRoot on the OnCreate
+                if(!nothingToChange) ArrayListRoot.add(tempRoot.get(i)); //because we initialized ArrayListRoot on the OnCreate
             }
         }
-        ArrayListRoot.add("break"); //because we initialized ArrayListRoot on the OnCreate
+        if(!nothingToChange)ArrayListRoot.add("break"); //because we initialized ArrayListRoot on the OnCreate
 
         if(newFichiers != null && newFichiers.length > 0)
         {
@@ -379,8 +420,11 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                 }
             });
             //sorting the files
-            Collections.sort(filePart, new Comparator<String>() {
-                public int compare(String arg0, String arg1) {
+            Collections.sort(filePart, new Comparator<String>()
+            {
+                public int compare(String arg0, String arg1)
+                {
+
                     return arg0.compareToIgnoreCase(arg1); // To compare string values alphabetically
                 }
             });
@@ -551,17 +595,19 @@ public class Parcourir extends AppCompatActivity implements AdapterView.OnItemCl
                     {
                         Intent prevActivityIntent = getIntent();
                         String prevAcvtivityName = prevActivityIntent.getStringExtra("PREVIOUS_ACTIVITY");
+                        String creationChoice = prevActivityIntent.getStringExtra("CREATTION_CHOICE");
                         String extension = targetedFile.getName().substring(targetedFile.getName().lastIndexOf(".") + 1);
                         if(extension.equals("pdf") && prevAcvtivityName.equals("CHANGE_PARTITION"))
                         {
-                            Log.e("Copying file","displayAlertBox(targetedFile.getName()) return " + resultOfAlertBox);
+                            //Log.e("Copying file","displayAlertBox(targetedFile.getName()) return " + resultOfAlertBox);
                             boolean fileExist = false;
                             File [] userFiles = userDir.listFiles();
 
                             //communicate the result to ChangePartition activity
                             Intent intent = new Intent();
                             intent.putExtra("RESULT_STRING", targetedFile.getPath());
-                            setResult(RESULT_OK, intent);
+                            if(creationChoice.equals("CREATION")) setResult(RESULT_OK, intent);
+                            else setResult(RESULT_OK, intent);
                             finish();
 
                         }

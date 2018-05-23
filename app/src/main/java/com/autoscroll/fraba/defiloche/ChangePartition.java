@@ -46,7 +46,7 @@ public class ChangePartition extends AppCompatActivity {
 
     final File DCIMDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
     final File DCIMParentDir = DCIMDir.getParentFile();
-    final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/Défileur de partitions");
+    final File userDir = new File(DCIMParentDir.getAbsolutePath() + "/Lecteur de partition");
 
     String PDFName;
     String resultFromParcourir = null;
@@ -414,8 +414,14 @@ public class ChangePartition extends AppCompatActivity {
     }
 
     public void goToParcourir(View view) {
+        //get the partition's position in the partition's memory
+        Intent previousIntent = getIntent();
+        int partitionPosition = previousIntent.getIntExtra("songNumber",-1);
+
+        //start the activity
         Intent intent = new Intent(this, Parcourir.class);
         intent.putExtra("PREVIOUS_ACTIVITY", "CHANGE_PARTITION");
+        intent.putExtra("COMES_FROM_CREATE", partitionPosition);
         startActivityForResult(intent, FROM_CHANGE_PARTITION);
     }
 
@@ -445,29 +451,40 @@ public class ChangePartition extends AppCompatActivity {
         //if the user don't want to change a partition
         if(partitionPosition == -1)
         {
-
             if (resultFromParcourir != null)
             {
                 File targetedFile = new File(resultFromParcourir);
                 boolean fileInDirectory = false;
                 File[] userFiles = userDir.listFiles();
 
-                try //copy and clear the activity
+                //check if the file is in the "Lecteur de partition" directory
+                for(int i = 0; i< userFiles.length ; i++)
                 {
-                    copy(targetedFile);//copy the partition in the directory
-                    TextView partitionNameView = findViewById(R.id.partitionNameView);
-                    if(!partitionNameView.getText().equals("Partition format PDF"))
+                    if (targetedFile.getName().equals(userFiles[i].getName()))
                     {
-                        list.add(new Partition(artisteED.getText().toString(), titreED.getText().toString(), secondesTotal, PDFName));//add the partition in the playlist
+                        fileInDirectory = true;
+                        //Toast.makeText(getApplicationContext(), "Ce fichier est déjà dans le dossier [Lecteur de partition]", Toast.LENGTH_SHORT).show();
                     }
-
-                    Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
-                    clearLayout();
                 }
-                catch (IOException e)
+                if(!fileInDirectory)
                 {
-                    Log.e("AlertBox OnItemclick", e.getMessage());
+                    try //copy and clear the activity
+                    {
+                        copy(targetedFile);//copy the partition in the directory
+                    }
+                    catch (IOException e)
+                    {
+                        Log.e("AlertBox OnItemclick", e.getMessage());
+                    }
                 }
+                TextView partitionNameView = findViewById(R.id.partitionNameView);
+                if (!partitionNameView.getText().equals("Partition format PDF"))
+                {
+                    list.add(new Partition(artisteED.getText().toString(), titreED.getText().toString(), secondesTotal, PDFName));//add the partition in the playlist
+                }
+
+                Toast.makeText(getApplicationContext(), "le ficher " + '"' + targetedFile.getName() + '"' + " fait désormais partie de l'application", Toast.LENGTH_SHORT).show();
+                clearLayout();
             }
             else
             {
