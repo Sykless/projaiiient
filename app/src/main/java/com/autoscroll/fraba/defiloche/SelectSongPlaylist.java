@@ -28,6 +28,8 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class SelectSongPlaylist extends AppCompatActivity
 {
@@ -142,15 +144,6 @@ public class SelectSongPlaylist extends AppCompatActivity
         {
             createLayout.setVisibility(View.GONE);
             deleteLayout.setVisibility(View.GONE);
-        }
-
-        if (partitionList != null)
-        {
-            System.out.println("Nombre de partitions au début : " + partitionList.size());
-        }
-        else
-        {
-            System.out.println("null !");
         }
 
         noPartition = partitionList == null || partitionList.size() == 0;
@@ -269,6 +262,11 @@ public class SelectSongPlaylist extends AppCompatActivity
                     editor.putInt("artisteTitreParam",TITLE);
                     editor.apply();
                     app.setArtisteTitreParam(TITLE);
+
+                    sortBy(TITLE);
+
+                    linearLayout.removeAllViews();
+                    listLayout();
                 }
             }
         });
@@ -292,6 +290,11 @@ public class SelectSongPlaylist extends AppCompatActivity
                     editor.putInt("artisteTitreParam",ARTIST);
                     editor.apply();
                     app.setArtisteTitreParam(ARTIST);
+
+                    sortBy(ARTIST);
+
+                    linearLayout.removeAllViews();
+                    listLayout();
                 }
             }
         });
@@ -327,18 +330,22 @@ public class SelectSongPlaylist extends AppCompatActivity
             }
         });
 
-        PartitionActivity app = (PartitionActivity) getApplicationContext();
+        app = (PartitionActivity) getApplicationContext();
         displayChoice = app.getArtisteTitreParam();
 
         if (displayChoice == TITLE)
         {
             textTitle.setBackgroundColor(getResources().getColor(R.color.darkcyan));
             textArtist.setBackgroundColor(getResources().getColor(R.color.cyan));
+
+            sortBy(TITLE);
         }
         else
         {
             textTitle.setBackgroundColor(getResources().getColor(R.color.cyan));
             textArtist.setBackgroundColor(getResources().getColor(R.color.darkcyan));
+
+            sortBy(ARTIST);
         }
 
         deleteMode = false;
@@ -468,8 +475,6 @@ public class SelectSongPlaylist extends AppCompatActivity
                 marginBottom = marginTop;
             }
 
-            Log.e("Test",""+marginTop) ;
-
             buttonParams.setMargins(marginSide, marginTop, marginSide, marginBottom);
             buttonParams.height = buttonHeight;
 
@@ -481,7 +486,14 @@ public class SelectSongPlaylist extends AppCompatActivity
             {
                 if (partitionList.get(i).getArtist().length() > 0 && partitionList.get(i).getTitle().length() > 0)
                 {
-                    toDisplay = partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle();
+                    if (displayChoice == ARTIST)
+                    {
+                        toDisplay = partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle();
+                    }
+                    else
+                    {
+                        toDisplay = partitionList.get(i).getTitle() + " - " + partitionList.get(i).getArtist();
+                    }
                 }
                 else
                 {
@@ -606,6 +618,65 @@ public class SelectSongPlaylist extends AppCompatActivity
         androidGuyEmpty = false;
     }
 
+    public void sortBy(int sortingChoice)
+    {
+        ArrayList<Partition> ArtistTitleList = new ArrayList<>();
+        ArrayList<Partition> PDFList = new ArrayList<>();
+
+        for (Partition partition : partitionList)
+        {
+            if (partition.getArtist().length() > 0 && partition.getTitle().length() > 0)
+            {
+                ArtistTitleList.add(partition);
+            }
+            else
+            {
+                PDFList.add(partition);
+            }
+        }
+
+        Collections.sort(PDFList, new Comparator<Partition>()
+        {
+            public int compare(Partition one, Partition other)
+            {
+                return one.getFile().getName().compareToIgnoreCase(other.getFile().getName());
+            }
+        });
+
+        if (sortingChoice == ARTIST)
+        {
+            Collections.sort(ArtistTitleList, new Comparator<Partition>()
+            {
+                public int compare(Partition one, Partition other)
+                {
+                    return one.getArtist().compareToIgnoreCase(other.getArtist());
+                }
+            });
+        }
+        else
+        {
+            Collections.sort(ArtistTitleList, new Comparator<Partition>()
+            {
+                public int compare(Partition one, Partition other)
+                {
+                    return one.getTitle().compareToIgnoreCase(other.getTitle());
+                }
+            });
+        }
+
+        partitionList.clear();
+
+        for (Partition partition : ArtistTitleList)
+        {
+            partitionList.add(partition);
+        }
+
+        for (Partition partition : PDFList)
+        {
+            partitionList.add(partition);
+        }
+    }
+
     public void goToCreate()
     {
         layoutEmpty = true;
@@ -685,7 +756,7 @@ public class SelectSongPlaylist extends AppCompatActivity
                     {
                         newPartitionList.add(partitionList.get(i));
                     }
-                    else // I will delete this song
+                    else if (playlistList != null && playlistList.size() > 0) // I will delete this song
                     {
                         int inDelete = 0;
                         ArrayList<Integer> sameSong = new ArrayList<>();

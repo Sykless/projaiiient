@@ -537,7 +537,7 @@ public class ChangePartition extends AppCompatActivity {
         else if (fileName.lastIndexOf("-") > 0)
         {
             artiste = fileName.substring(0,fileName.lastIndexOf("-"));
-            titre = fileName.substring(fileName.lastIndexOf("-") + 1, fileName.lastIndexOf("."));
+            titre = fileName.substring(fileName.lastIndexOf("-") + 2, fileName.lastIndexOf("."));
         }
         else
         {

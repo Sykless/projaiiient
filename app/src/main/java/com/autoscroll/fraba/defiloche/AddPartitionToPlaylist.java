@@ -31,6 +31,8 @@ import com.google.gson.Gson;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AddPartitionToPlaylist extends AppCompatActivity
 {
@@ -39,6 +41,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
     private static final int INSIDEPLAYLIST = 2;
 
     boolean setup = false;
+    boolean destroyPlaylist = true;
     float backgroundSize = 0;
 
     int displayChoice = TITLE;
@@ -59,12 +62,13 @@ public class AddPartitionToPlaylist extends AppCompatActivity
     RelativeLayout textTitle;
     RelativeLayout textArtist;
     FrameLayout validateLayout;
+    FrameLayout backLayout;
 
     LinearLayout layoutSource;
     LinearLayout layoutToAdd;
 
     ArrayList<Partition> partitionList;
-    ArrayList<Integer> playlist = new ArrayList<>();
+    ArrayList<Integer> playlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -72,7 +76,7 @@ public class AddPartitionToPlaylist extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_partition_to_playlist);
 
-        FrameLayout backLayout = findViewById(R.id.backLayout);
+        backLayout = findViewById(R.id.backLayout);
         validateLayout = findViewById(R.id.validateLayout);
 
         backLayout.setOnClickListener(new View.OnClickListener()
@@ -112,39 +116,62 @@ public class AddPartitionToPlaylist extends AppCompatActivity
         });
 
 
-        textTitle.setOnTouchListener(new View.OnTouchListener()
+        textTitle.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN && displayChoice == ARTIST)
+            public void onClick(View v) {
+                if (displayChoice == ARTIST)
                 {
                     textTitle.setBackgroundColor(getResources().getColor(R.color.darkgreen));
                     textArtist.setBackgroundColor(getResources().getColor(R.color.green));
 
                     displayChoice = TITLE;
-                }
 
-                return false;
+                    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    PartitionActivity app = (PartitionActivity) getApplicationContext();
+
+                    editor.putInt("artisteTitreParam",TITLE);
+                    editor.apply();
+                    app.setArtisteTitreParam(TITLE);
+
+                    sortBy(TITLE);
+                    refreshLayout();
+                }
             }
         });
 
-        textArtist.setOnTouchListener(new View.OnTouchListener()
+        textArtist.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
+            public void onClick(View v)
             {
-                if (event.getAction() == MotionEvent.ACTION_DOWN && displayChoice == TITLE)
+                if (displayChoice == TITLE)
                 {
                     textTitle.setBackgroundColor(getResources().getColor(R.color.green));
                     textArtist.setBackgroundColor(getResources().getColor(R.color.darkgreen));
 
                     displayChoice = ARTIST;
-                }
 
-                return false;
+                    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    PartitionActivity app = (PartitionActivity) getApplicationContext();
+
+                    editor.putInt("artisteTitreParam",ARTIST);
+                    editor.apply();
+                    app.setArtisteTitreParam(ARTIST);
+
+                    sortBy(ARTIST);
+                    refreshLayout();
+                }
             }
         });
 
+        refreshLayout();
+    }
+
+    public void refreshLayout()
+    {
         // Layout modification according to orientation of the device
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -173,9 +200,33 @@ public class AddPartitionToPlaylist extends AppCompatActivity
         layoutSource = findViewById(R.id.layoutSource);
         layoutToAdd = findViewById(R.id.layoutToAdd);
 
+        layoutSource.removeAllViews();
+
+        if (destroyPlaylist)
+        {
+            layoutToAdd.removeAllViews();
+            playlist = new ArrayList<>();
+        }
+
         PartitionActivity app = (PartitionActivity) getApplicationContext();
         partitionList = app.getPartitionList();
         partitionSize = partitionList.size();
+        displayChoice = app.getArtisteTitreParam();
+
+        if (displayChoice == TITLE)
+        {
+            textTitle.setBackgroundColor(getResources().getColor(R.color.darkgreen));
+            textArtist.setBackgroundColor(getResources().getColor(R.color.green));
+
+            sortBy(TITLE);
+        }
+        else
+        {
+            textTitle.setBackgroundColor(getResources().getColor(R.color.green));
+            textArtist.setBackgroundColor(getResources().getColor(R.color.darkgreen));
+
+            sortBy(ARTIST);
+        }
 
         for (int i = 0 ; i < partitionSize ; i++)
         {
@@ -202,7 +253,14 @@ public class AddPartitionToPlaylist extends AppCompatActivity
 
             if (partitionList.get(i).getArtist().length() > 0 && partitionList.get(i).getTitle().length() > 0)
             {
-                toDisplay = partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle();
+                if (displayChoice == ARTIST)
+                {
+                    toDisplay = partitionList.get(i).getArtist() + " - " + partitionList.get(i).getTitle();
+                }
+                else
+                {
+                    toDisplay = partitionList.get(i).getTitle() + " - " + partitionList.get(i).getArtist();
+                }
             }
             else
             {
@@ -238,9 +296,10 @@ public class AddPartitionToPlaylist extends AppCompatActivity
             layoutSource.addView(newButton, i);
         }
 
-        if (getIntent().getIntExtra("displayMode", 0) == INSIDEPLAYLIST)
+        if (getIntent().getIntExtra("displayMode", 0) == INSIDEPLAYLIST && destroyPlaylist)
         {
             playlistNumber = getIntent().getIntExtra("playlistNumber", 0);
+            partitionsSelected = 0;
 
             app = (PartitionActivity) getApplicationContext();
             ArrayList<Playlist> playlistList = app.getPlaylistList();
@@ -272,56 +331,9 @@ public class AddPartitionToPlaylist extends AppCompatActivity
                 }
             }
         }
+
+        destroyPlaylist = false;
     }
-
-    View.OnClickListener sourceClick = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View view)
-        {
-            view.startAnimation(buttonClick);
-            view.startAnimation(buttonClickRelease);
-
-            addToPlaylist(partitionList.get(view.getId()), partitionsSelected);
-
-            partitionsSelected++;
-            playlist.add(view.getId());
-
-            ((ImageView) validateLayout.getChildAt(0)).setImageResource(R.drawable.ic_done_white_48dp);
-            validateLayout.setClickable(true);
-        }
-    };
-
-    View.OnClickListener toAddClick = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View view)
-        {
-            System.out.println(partitionsSelected);
-
-            for (int i = view.getId() + 1 ; i < partitionsSelected ; i++)
-            {
-                ((TextView)(((RelativeLayout)((LinearLayout) layoutToAdd.getChildAt(i)).getChildAt(0)).getChildAt(0))).setText(String.valueOf(i));
-                layoutToAdd.getChildAt(i).setId(i - 1);
-            }
-
-            playlist.remove(view.getId());
-            layoutToAdd.removeViewAt(view.getId());
-
-            partitionsSelected--;
-
-            if (partitionsSelected > 0)
-            {
-                ((ImageView) validateLayout.getChildAt(0)).setImageResource(R.drawable.ic_done_white_48dp);
-                validateLayout.setClickable(true);
-            }
-            else
-            {
-                ((ImageView) validateLayout.getChildAt(0)).setImageResource(R.drawable.ic_done_grey_48dp);
-                validateLayout.setClickable(false);
-            }
-        }
-    };
 
     void addToPlaylist(Partition partitionToAdd, int numberPartition)
     {
@@ -451,4 +463,118 @@ public class AddPartitionToPlaylist extends AppCompatActivity
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }
+
+    public void sortBy(int sortingChoice)
+    {
+        ArrayList<Partition> ArtistTitleList = new ArrayList<>();
+        ArrayList<Partition> PDFList = new ArrayList<>();
+
+        for (Partition partition : partitionList)
+        {
+            if (partition.getArtist().length() > 0 && partition.getTitle().length() > 0)
+            {
+                ArtistTitleList.add(partition);
+            }
+            else
+            {
+                PDFList.add(partition);
+            }
+        }
+
+        Collections.sort(PDFList, new Comparator<Partition>()
+        {
+            public int compare(Partition one, Partition other)
+            {
+                return one.getFile().getName().compareToIgnoreCase(other.getFile().getName());
+            }
+        });
+
+        if (sortingChoice == ARTIST)
+        {
+            Collections.sort(ArtistTitleList, new Comparator<Partition>()
+            {
+                public int compare(Partition one, Partition other)
+                {
+                    return one.getArtist().compareToIgnoreCase(other.getArtist());
+                }
+            });
+        }
+        else
+        {
+            Collections.sort(ArtistTitleList, new Comparator<Partition>()
+            {
+                public int compare(Partition one, Partition other)
+                {
+                    return one.getTitle().compareToIgnoreCase(other.getTitle());
+                }
+            });
+        }
+
+        partitionList.clear();
+
+        for (Partition partition : ArtistTitleList)
+        {
+            partitionList.add(partition);
+        }
+
+        for (Partition partition : PDFList)
+        {
+            partitionList.add(partition);
+        }
+    }
+
+    View.OnClickListener sourceClick = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View view)
+        {
+            view.startAnimation(buttonClick);
+            view.startAnimation(buttonClickRelease);
+
+            addToPlaylist(partitionList.get(view.getId()), partitionsSelected);
+
+            partitionsSelected++;
+            playlist.add(view.getId());
+
+            ((ImageView) validateLayout.getChildAt(0)).setImageResource(R.drawable.ic_done_white_48dp);
+            validateLayout.setClickable(true);
+        }
+    };
+
+    View.OnClickListener toAddClick = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View view)
+        {
+            if (view.getId() != partitionsSelected - 1)
+            {
+                for (int i = view.getId() ; i < partitionsSelected ; i++)
+                {
+                    if (i == view.getId())
+                    {
+                        i++; // Solve a bug
+                    }
+
+                    ((TextView)(((RelativeLayout)((LinearLayout) layoutToAdd.getChildAt(i)).getChildAt(0)).getChildAt(0))).setText(String.valueOf(i));
+                    layoutToAdd.getChildAt(i).setId(i - 1);
+                }
+            }
+
+            playlist.remove(view.getId());
+            layoutToAdd.removeViewAt(view.getId());
+
+            partitionsSelected--;
+
+            if (partitionsSelected > 0)
+            {
+                ((ImageView) validateLayout.getChildAt(0)).setImageResource(R.drawable.ic_done_white_48dp);
+                validateLayout.setClickable(true);
+            }
+            else
+            {
+                ((ImageView) validateLayout.getChildAt(0)).setImageResource(R.drawable.ic_done_grey_48dp);
+                validateLayout.setClickable(false);
+            }
+        }
+    };
 }

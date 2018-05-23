@@ -67,4 +67,9 @@ public class Partition
     {
         pdfFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getParentFile().getAbsolutePath() + "/Défileur de partitions/" + fileName);
     }
+
+    public String toString()
+    {
+        return "Artist : " + mArtist + " - Title : " + mTitle + " - Speed : " + mSpeed + " - File : " + pdfFile.getName();
+    }
 }

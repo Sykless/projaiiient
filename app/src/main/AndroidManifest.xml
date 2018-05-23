@@ -27,9 +27,7 @@
         <activity android:name=".ChangePartition" />
         <activity android:name=".SelectSongPlaylist" />
         <activity android:name=".ChangeSongParam" />
-        <activity
-            android:name=".AddPartitionToPlaylist"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".AddPartitionToPlaylist" />
         <activity android:name=".CreatePlaylist" />
         <activity android:name=".InsidePlaylist"></activity>
     </application>
